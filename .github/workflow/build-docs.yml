@@ -1,0 +1,50 @@
+# .github/workflows/build-docs.yml
+name: Build Docs
+
+on:
+  workflow_call:
+    inputs:
+      runner:
+        required: true
+        type: string
+
+jobs:
+  build-docs:
+    name: Build Documentation
+    runs-on: ${{ inputs.runner }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.10"
+
+      # Equivalent of .common_steps_per_job_on_linux
+      - name: Prepare environment
+        run: |
+          python3 --version
+          pip --version
+          python3 -m pip install --upgrade pip
+          pip install -e .[test,docs]
+
+      - name: Copy docs
+        run: |
+          cp README.md docs/source/README.md
+          cp CHANGELOG.md docs/source/CHANGELOG.md
+
+      - name: Build docs
+        run: |
+          mkdir public
+          cd docs
+          make html
+          cd ..
+          cp -r docs/build/html/* public
+          ls -R public
+
+      - name: Upload built docs
+        uses: actions/upload-artifact@v4
+        with:
+          name: public
+          path: public

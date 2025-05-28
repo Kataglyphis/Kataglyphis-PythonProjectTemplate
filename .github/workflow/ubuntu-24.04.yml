@@ -1,0 +1,33 @@
+# .github/workflows/ubuntu-24.04.yml
+name: Ubuntu 24.04 Workflow
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  build-docs:
+    uses: ./.github/workflows/build-docs.yml
+    with:
+      runner: ubuntu-24.04
+
+  static-analysis:
+    uses: ./.github/workflows/static-analysis.yml
+    with:
+      runner: ubuntu-24.04
+
+  pytest-matrix:
+    uses: ./.github/workflows/pytest-matrix.yml
+    with:
+      runner: ubuntu-24.04
+
+  packaging-sources:
+    uses: ./.github/workflows/packaging-sources.yml
+    with:
+      runner: ubuntu-24.04
+
+  packaging-binaries-linux:
+    uses: ./.github/workflows/packaging-binaries-linux-x86-64.yml
+    with:
+      runner: ubuntu-24.04

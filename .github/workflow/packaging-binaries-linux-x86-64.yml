@@ -1,0 +1,42 @@
+# .github/workflows/packaging-binaries-linux-x86-64.yml
+name: Build Linux x86_64 Binaries
+
+on:
+  workflow_call:
+    inputs:
+      runner:
+        required: true
+        type: string
+
+jobs:
+  build-package-binaries-linux-x86-64:
+    runs-on: ${{ inputs.runner }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Prepare environment
+        run: |
+          python3 -m pip install --upgrade pip
+          pip install -e .[test]
+
+      - name: Build and rename Linux x86_64 wheels
+        run: |
+          export CYTHONIZE="True"
+          cp packaging/binary/MANIFEST.in MANIFEST.in
+          pip install --upgrade setuptools wheel cython build twine
+          python3 setup.py build_ext --inplace
+          python3 -m build
+          PYTHON_VERSION_SHORT=$(python3 -c 'import sys; print(f"{sys.version_info[0]}{sys.version_info[1]}")')
+          PYTHON_ABI="cp${PYTHON_VERSION_SHORT}"
+          PLATFORM="manylinux1_x86_64"
+          TAG="${PYTHON_ABI}-${PYTHON_ABI}-${PLATFORM}"
+          for f in dist/*.whl; do
+            mv "$f" "$(echo $f | sed "s/py3-none-any/$TAG/")"
+          done
+
+      - name: Store distribution artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: dist-artifact
+          path: dist/*

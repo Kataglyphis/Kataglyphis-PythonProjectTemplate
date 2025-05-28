@@ -1,43 +1,208 @@
-# KataglyphisPythonPackage
+<h1 align="center">
+  <br>
+  <a href="https://jonasheinle.de"><img src="images/logo.png" alt="logo" width="200"></a>
+  <br>
+  KataglyphisPythonPackage
+  <br>
+</h1>
 
-> **_NOTE:_** This is only a template. Replace dummy data with your package info.
+<h4 align="center">A template <a href="https://jonasheinle.de" target="_blank"></a>.</h4>
 
-**Maintainers:**  
-Here you can list project members responsible for this project (e.g., who can be asked and assigned to merge requests).
+[![Donate](https://img.shields.io/badge/Donate-PayPal-green.svg)](https://www.paypal.com/paypalme/JonasHeinle)
+[![Twitter](https://img.shields.io/twitter/follow/Cataglyphis_?style=social)](https://twitter.com/Cataglyphis_)
 
-*Project description right here pls*
+<p align="center">
+  <a href="#about-the-project">About The Project</a> •
+  <a href="#overview">Overview</a> •
+  <a href="#getting-started">Getting Started</a> •
+  <a href="#tests">Tests</a> •
+  <a href="#roadmap">Roadmap</a> •
+  <a href="#contributing">Contributing</a> •
+  <a href="#license">License</a> •
+  <a href="#acknowledgements">Acknowledgements</a> •
+  <a href="#literature">Literature</a>
+</p>
+
+<details open="open">
+  <summary>Table of Contents</summary>
+  <ol>
+    <li>
+      <a href="#about-the-project">About The Project</a>
+      <ul>
+        <li><a href="#key-features">Key Features</a></li>
+        <li><a href="#dependencies">Dependencies</a></li>
+        <li><a href="#useful-tools">Useful Tools</a></li>
+      </ul>
+    </li>
+    <li><a href="#overview">Overview</a></li>
+    <li>
+      <a href="#getting-started">Getting Started</a>
+      <ul>
+        <li><a href="#setup">Setup</a></li>
+        <li><a href="#installation">Installation</a></li>
+        <li><a href="#deployment-recommendations-hardwaresoftware">Deployment Recommendations</a></li>
+      </ul>
+    </li>
+    <li><a href="#tests">Tests</a></li>
+    <li><a href="#roadmap">Roadmap</a></li>
+    <li><a href="#contributing">Contributing</a></li>
+    <li><a href="#license">License</a></li>
+    <li><a href="#contact-and-maintainers">Contact and Maintainers</a></li>
+    <li><a href="#acknowledgements">Acknowledgements</a></li>
+    <li><a href="#literature">Literature</a></li>
+    <li><a href="#demo">Demo</a></li>
+    <li><a href="#references">References</a></li>
+    <li><a href="#known-issues">Known Issues</a></li>
+  </ol>
+</details>
+
+---
+
+## About The Project
+
+This project is a template for a Python package named **KataglyphisPythonPackage**.  
+Use it as a starting point for creating and deploying your own Python projects.
+
+### Key Features
+
+- Features are to be adjusted to your own project needs.
+
+### Dependencies
+
+- Adjust according to your project’s actual Python and library dependencies.
+
+### Useful Tools
+
+| Tool                                               | Description             |
+| -------------------------------------------------- | ----------------------- |
+| [ty](https://github.com/python/mypy)               | ty                      |
+| [ruff](https://github.com/astral-sh/ruff)          | Linter                  |
+| [uv](https://github.com/astral-sh/uv)              | Command-line utility    |
+
+---
 
 ## Overview
 
-### History
-The versioning of the package can be viewed [here](CHANGELOG.md).
+The versioning of the package can be viewed in [CHANGELOG.md](CHANGELOG.md).
 
-## Deployment Recommendations (Hardware/Software)
-The deployment of Python packages into production as “binary only” wheels can be viewed [here](https://gitlab.cc-asp.fraunhofer.de/AIMV/research_teams/activity_and_scene_analysis/packages).
+---
 
-## Setup
+## Getting Started
 
-### First step
+### Setup
 
-### Second step
+Feel free to adjust for your own environment.
+
+### Installation
 
 There are three major ways to install this package in your environment:
 
-# Requirements
+1. **Install directly via pip:**
+   ```bash
+   pip install KataglyphisPythonPackage@git+https://github.com/Kataglyphis/Kataglyphis-PythonProjectTemplate
+   ```
+   or install a specific tagged version:
+   ```bash
+   pip install KataglyphisPythonPackage@git+https://github.com/Kataglyphis/Kataglyphis-PythonProjectTemplate@v0.0.1
+   ```
 
-## Tools
-For our Python packages, we recommend using the following tools:
+2. **Install after cloning the repo:**
+   ```bash
+   git clone https://github.com/Kataglyphis/Kataglyphis-PythonProjectTemplate
+   pip install .
+   ```
 
-| Tool | Description |
-|-----|-------------|
-| [mypy](https://github.com/python/mypy) | Static type checking |
-| [ruff](https://github.com/astral-sh/ruff) | Linter |
-| [uv](https://github.com/astral-sh/uv) | Command-line utility |
+   or
 
-# Demo
+   ```bash
+   pip install -e .
+   ```
+
+   (an editable install: changes in the repo will be reflected in your environment)
+
+3. **Add as a submodule to your repository:**
+   ```bash
+   git submodule add https://github.com/Kataglyphis/Kataglyphis-PythonProjectTemplate
+   ```
+   Make sure that all dependencies are installed during your repo’s installation.  
+   (Not generally recommended, as it can be more complicated.)
+
+### Deployment Recommendations (Hardware/Software)
+
+For insights into deploying Python packages into production as “binary only” wheels, see:  
+[Binary Wheel Deployment](https://gitlab.cc-asp.fraunhofer.de/AIMV/research_teams/activity_and_scene_analysis/packages)
+
+---
+
+## Tests
+
+For development, you can install comprehensive dependencies with:
+```bash
+pip install -v -e .[dev,docs,test]
+```
+Then run your testing framework (e.g., `pytest`).
+
+---
+
+## Roadmap
+
+Specify planned features or improvements here.
+
+---
+
+## Contributing
+
+Contributions make open source software better! To contribute:
+
+1. Fork the project
+2. Create your feature branch (`git checkout -b feature/AmazingFeature`)
+3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
+4. Push to the branch (`git push origin feature/AmazingFeature`)
+5. Open a Pull Request
+
+---
+
+## License
+
+Use or adapt your license here.
+
+---
+
+## Contact and Maintainers
+
+- Primary contact: [@Cataglyphis_](https://twitter.com/Cataglyphis_)
+- Project example link: [GitHub](https://github.com/Kataglyphis/...)
+
+**Maintainers:**  
+Replace this text with the list of maintainers who can be asked and assigned to review or merge requests.
+
+---
+
+## Acknowledgements
+
+Mention credits for any third-party resources.
+
+---
+
+## Literature
+
+List helpful literature, tutorials, or references that have guided this project.
+
+---
+
+## Demo
+
+If you have examples or demonstrations, add them here.
+
+---
 
 ## References
+
 KataglyphisPythonPackage is used in the following repos/packages:
+- Adapt this list to reference actual uses.
+
+---
 
 ## Known Issues
-List any known issues here.
+
+List any known issues here. 

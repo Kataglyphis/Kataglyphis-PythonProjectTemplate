@@ -1,0 +1,36 @@
+# .github/workflows/packaging-sources.yml
+name: Packaging (Source)
+
+on:
+  workflow_call:
+    inputs:
+      runner:
+        required: true
+        type: string
+
+jobs:
+  packaging:
+    name: Build and Upload Source
+    runs-on: ${{ inputs.runner }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Prepare environment
+        run: |
+          python3 -m pip install --upgrade pip
+          pip install build twine
+
+      - name: Copy Manifest
+        run: cp packaging/source/MANIFEST.in MANIFEST.in
+
+      - name: Build source distribution
+        run: python -m build
+
+      - name: Store distribution artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: dist-artifact
+          path: dist/*

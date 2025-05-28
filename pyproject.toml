@@ -16,7 +16,7 @@ authors = [{ name = "Jonas Heinle", email = "jonasheinle@googlemail.com" }]
 description = "Lore ipsum."
 readme = "README.md"
 requires-python = ">=3.10"
-keywords = ["computer vision", "object detection"]
+keywords = ["blub"]
 classifiers = [
     "Development Status :: 5 - Production/Stable",
     "Intended Audience :: Developers",
@@ -36,25 +36,22 @@ dependencies = ["numpy>=1.21.0,<2.0.0", "loguru", "tqdm"]
 test = [
     "pytest",
     "pytest-cov",
-    "pylint",
-    "flake8",
     "codespell",
-    "black",
-    "mypy",
-    "bandit",
-    "vulture",
+    "mypy",       # type checking
+    "bandit",     # find security vulnerabilities
+    "vulture",    # find dead code
+    "ruff",       # replacement for flake8
+    "ty",         # type checking
 ]
 
-docs = ["sphinx", "sphinx_rtd_theme", "myst-parser"]
+docs = ["sphinx", "sphinx-press-theme", "myst-parser"]
 
-dev = ["black", "mypy", "bandit", "ruff"]
+fuzzytests = [
+    "atheris", # Fuzz testing
+]
 
 [project.urls]
 Homepage = "https://github.com/Kataglyphis/Kataglyphis-PythonProjectTemplate"
-
-[tool.black]
-line-length = 88
-target-version = ['py38']
 
 [tool.mypy]
 python_version = "3.8"
