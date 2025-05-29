@@ -30,4 +30,4 @@ jobs:
   packaging-binaries-linux:
     uses: ./.github/workflows/packaging-binaries-linux-x86-64.yml
     with:
-      runner: ubuntu-24.04
+      runner: ubuntu-24.04-arm
