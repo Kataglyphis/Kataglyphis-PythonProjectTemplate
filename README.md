@@ -70,6 +70,29 @@ Use it as a starting point for creating and deploying your own Python projects.
 
 - Features are to be adjusted to your own project needs.
 
+
+<div align="center">
+
+
+|            Category           |           Feature                             |  Implement Status  |
+|-------------------------------|-----------------------------------------------|:------------------:|
+|  **Packaging agnostic**   | Binary only deployment                            |         ✔️         |
+|                               | Lore ipsum                                   |         ✔️         |
+|  **Lore ipsum agnostic**   |                                               |                    |
+|                               | LORE IPSUM                            |         ✔️         |
+|                               |
+|                               | Advanced unit testing                         |         🔶         |
+|                               | Advanced performance testing                  |         🔶         |
+|                               | Advanced fuzz testing                         |         🔶         |
+
+</div>
+
+**Legend:**
+- ✔️ - completed  
+- 🔶 - in progress  
+- ❌ - not started
+
+
 ### Dependencies
 
 - Adjust according to your project’s actual Python and library dependencies.
