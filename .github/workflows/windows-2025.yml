@@ -1,5 +1,5 @@
 # .github/workflows/ubuntu-24.04.yml
-name: Ubuntu 24.04 Workflow
+name: Windows 2025 Workflow
 on:
   push:
     branches: [main]
