@@ -7,6 +7,7 @@
 </h1>
 
 <h4 align="center">A template <a href="https://jonasheinle.de" target="_blank"></a>.</h4>
+
 [![Ubuntu 24.04 Workflow](https://github.com/Kataglyphis/Kataglyphis-PythonProjectTemplate/actions/workflows/ubuntu-24.04.yml/badge.svg)](https://github.com/Kataglyphis/Kataglyphis-PythonProjectTemplate/actions/workflows/ubuntu-24.04.yml)
 [![Windows 2025 Workflow](https://github.com/Kataglyphis/Kataglyphis-PythonProjectTemplate/actions/workflows/windows-2025.yml/badge.svg)](https://github.com/Kataglyphis/Kataglyphis-PythonProjectTemplate/actions/workflows/windows-2025.yml)
 [![Ubuntu 24.04 ARM Workflow](https://github.com/Kataglyphis/Kataglyphis-PythonProjectTemplate/actions/workflows/ubuntu-24.04-arm.yml/badge.svg)](https://github.com/Kataglyphis/Kataglyphis-PythonProjectTemplate/actions/workflows/ubuntu-24.04-arm.yml)
