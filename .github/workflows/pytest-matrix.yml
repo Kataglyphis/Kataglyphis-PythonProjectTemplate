@@ -7,6 +7,9 @@ on:
       runner:
         required: true
         type: string
+      packagename:
+        required: true
+        type: string
       python-versions:
         required: true
         type: string
@@ -37,7 +40,7 @@ jobs:
 
       - name: Run tests
         run: |
-          pytest tests/unit --cov=kataglyphispythonproject --cov-report=term-missing --junitxml=docs/test_results/report-${{ matrix.python-version }}.xml
+          pytest tests/unit --cov=${{ inputs.runner }} --cov-report=term-missing --junitxml=docs/test_results/report-${{ matrix.python-version }}.xml
           python bench/demo.py
           kernprof -l -v bench/demo_line_profiler.py
           python -m memory_profiler bench/demo_memory_profiling.py
@@ -48,5 +51,5 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v4.6.2
         with:
-          name: reports-${{matrix.python-version}}-${{ github.run_id }}
+          name: reports-${{matrix.python-version}}-${{ inputs.runner }}-${{ github.run_id }}
           path: docs/test_results/

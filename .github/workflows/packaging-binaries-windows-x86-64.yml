@@ -14,6 +14,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4.2.2
+        with:
+          submodules: recursive
 
       # Equivalent of .common_steps_per_job_on_windows
       - name: Prepare environment
@@ -25,7 +27,7 @@ jobs:
       - name: Build Windows binaries
         run: |
           $env:CYTHONIZE = "True"
-          cp packaging/binary/MANIFEST.in MANIFEST.in
+          cp resources/packaging/binary/MANIFEST.in MANIFEST.in
           pip install --upgrade setuptools wheel cython build twine
           python setup.py build_ext --inplace
           python -m build
