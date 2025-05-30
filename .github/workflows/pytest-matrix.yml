@@ -36,6 +36,10 @@ jobs:
         run: |
           pytest tests/unit --cov=kataglyphispythonproject --cov-report=term-missing --junitxml=docs/test_results/report-${{ matrix.python-version }}.xml
           bench/demo.py
+          kernprof -l -v bench/demo_line_profiler.py
+          python -m memory_profiler bench/demo_memory_profiling.py
+          py-spy record -o profile.svg -- python demo/py_spy.py
+          pytest bench/demo_pytest_benchmark.py
 
       - name: Upload test results
         if: always()

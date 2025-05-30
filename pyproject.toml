@@ -35,14 +35,17 @@ dependencies = ["numpy>=1.21.0,<2.0.0", "loguru", "tqdm", "pandas"]
 [project.optional-dependencies]
 test = [
     "pytest",
-    "Faker",
+    "line_profiler",    # line-by-line profiling
+    "pytest-benchmark", # benchmark tests
+    "memory-profiler",  # memory profiling
+    "py-spy",           # profiling
     "pytest-cov",
     "codespell",
-    "mypy",       # type checking
-    "bandit",     # find security vulnerabilities
-    "vulture",    # find dead code
-    "ruff",       # replacement for flake8
-    "ty",         # type checking
+    "mypy",             # type checking
+    "bandit",           # find security vulnerabilities
+    "vulture",          # find dead code
+    "ruff",             # replacement for flake8
+    "ty",               # type checking
 ]
 
 docs = ["sphinx", "sphinx-press-theme", "myst-parser"]
