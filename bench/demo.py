@@ -1,5 +1,6 @@
 import time
 import timeit
+import cProfile
 
 from kataglyphispythonpackage.fib import fib
 
@@ -28,3 +29,4 @@ def benchmark_with_lineprofiler():
 if __name__ == "__main__":
     benchmark_package()
     benchmark_with_lineprofiler()
+    cProfile.run("fib(35)")
