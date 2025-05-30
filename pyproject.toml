@@ -30,11 +30,12 @@ classifiers = [
     "Programming Language :: Python :: 3.10",
 ]
 
-dependencies = ["numpy>=1.21.0,<2.0.0", "loguru", "tqdm"]
+dependencies = ["numpy>=1.21.0,<2.0.0", "loguru", "tqdm", "pandas"]
 
 [project.optional-dependencies]
 test = [
     "pytest",
+    "Faker",
     "pytest-cov",
     "codespell",
     "mypy",       # type checking

@@ -33,7 +33,9 @@ jobs:
           pip install -e .[test]
 
       - name: Run tests
-        run: pytest tests/unit --cov=kataglyphispythonproject --cov-report=term-missing --junitxml=docs/test_results/report-${{ matrix.python-version }}.xml
+        run: |
+          pytest tests/unit --cov=kataglyphispythonproject --cov-report=term-missing --junitxml=docs/test_results/report-${{ matrix.python-version }}.xml
+          bench/demo.py
 
       - name: Upload test results
         if: always()
