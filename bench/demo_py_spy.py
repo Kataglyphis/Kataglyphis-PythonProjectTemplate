@@ -29,7 +29,7 @@ def main():
     start = time.time()
 
     print("Computing primes up to 20000...")
-    primes = compute_primes(20000)
+    primes = compute_primes(2000000)
 
     print("Sorting primes with heavy key function...")
     sorted_primes = heavy_sorting_task(primes)
