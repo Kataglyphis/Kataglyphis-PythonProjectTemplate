@@ -101,7 +101,7 @@ Use it as a starting point for creating and deploying your own Python projects.
 
 | Tool                                               | Description             |
 | -------------------------------------------------- | ----------------------- |
-| [ty](https://github.com/python/mypy)               | ty                      |
+| [ty](https://github.com/astral-sh/ty)              | ty                      |
 | [ruff](https://github.com/astral-sh/ruff)          | Linter                  |
 | [uv](https://github.com/astral-sh/uv)              | Command-line utility    |
 
@@ -155,8 +155,8 @@ There are three major ways to install this package in your environment:
 
 ### Deployment Recommendations (Hardware/Software)
 
-For insights into deploying Python packages into production as “binary only” wheels, see:  
-[Binary Wheel Deployment](https://gitlab.cc-asp.fraunhofer.de/AIMV/research_teams/activity_and_scene_analysis/packages)
+For insights into deploying Python packages into production as “binary only” wheels
+have a look into the corresponding workflows.
 
 ---
 
