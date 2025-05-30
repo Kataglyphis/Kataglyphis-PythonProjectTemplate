@@ -8,6 +8,9 @@
 
 <h4 align="center">A template <a href="https://jonasheinle.de" target="_blank"></a>.</h4>
 
+[![Ubuntu 24.04 Workflow](https://github.com/Kataglyphis/Kataglyphis-PythonProjectTemplate/actions/workflows/ubuntu-24.04.yml/badge.svg)](https://github.com/Kataglyphis/Kataglyphis-PythonProjectTemplate/actions/workflows/ubuntu-24.04.yml)
+[![Windows 2025 Workflow](https://github.com/Kataglyphis/Kataglyphis-PythonProjectTemplate/actions/workflows/windows-2025.yml/badge.svg)](https://github.com/Kataglyphis/Kataglyphis-PythonProjectTemplate/actions/workflows/windows-2025.yml)
+[![Ubuntu 24.04 ARM Workflow](https://github.com/Kataglyphis/Kataglyphis-PythonProjectTemplate/actions/workflows/ubuntu-24.04-arm.yml/badge.svg)](https://github.com/Kataglyphis/Kataglyphis-PythonProjectTemplate/actions/workflows/ubuntu-24.04-arm.yml)
 [![Donate](https://img.shields.io/badge/Donate-PayPal-green.svg)](https://www.paypal.com/paypalme/JonasHeinle)
 [![Twitter](https://img.shields.io/twitter/follow/Cataglyphis_?style=social)](https://twitter.com/Cataglyphis_)
 
@@ -66,6 +69,29 @@ Use it as a starting point for creating and deploying your own Python projects.
 ### Key Features
 
 - Features are to be adjusted to your own project needs.
+
+
+<div align="center">
+
+
+|            Category           |           Feature                             |  Implement Status  |
+|-------------------------------|-----------------------------------------------|:------------------:|
+|  **Packaging agnostic**   | Binary only deployment                            |         ✔️         |
+|                               | Lore ipsum                                   |         ✔️         |
+|  **Lore ipsum agnostic**   |                                               |                    |
+|                               | LORE IPSUM                            |         ✔️         |
+|                               |
+|                               | Advanced unit testing                         |         🔶         |
+|                               | Advanced performance testing                  |         🔶         |
+|                               | Advanced fuzz testing                         |         🔶         |
+
+</div>
+
+**Legend:**
+- ✔️ - completed  
+- 🔶 - in progress  
+- ❌ - not started
+
 
 ### Dependencies
 

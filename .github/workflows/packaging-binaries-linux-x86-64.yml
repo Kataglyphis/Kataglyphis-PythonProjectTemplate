@@ -38,5 +38,5 @@ jobs:
       - name: Store distribution artifact
         uses: actions/upload-artifact@v4.6.2
         with:
-          name: dist-artifact
+          name: dist-artifact-${{ github.run_id }}
           path: dist/*

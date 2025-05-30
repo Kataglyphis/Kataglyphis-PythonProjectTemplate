@@ -39,5 +39,5 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v4.6.2
         with:
-          name: reports
+          name: reports-${{matrix.python-version}}-${{ github.run_id }}
           path: docs/test_results/
