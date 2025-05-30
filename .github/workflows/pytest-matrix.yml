@@ -7,6 +7,9 @@ on:
       runner:
         required: true
         type: string
+      python-versions:
+        required: true
+        type: string
 
 jobs:
   python-tests:
@@ -15,7 +18,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        python-version: [3.8, 3.9, 3.11, 3.12, 3.13]
+        python-version: ${{ fromJSON(inputs.python-versions) }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4.2.2
