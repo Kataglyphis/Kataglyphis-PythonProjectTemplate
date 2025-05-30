@@ -21,12 +21,6 @@ def benchmark_package():
     print(f"Average execution time over 10 runs: {execution_time:.6f} seconds")
 
 
-@profile
-def benchmark_with_lineprofiler():
-    fib(35)
-
-
 if __name__ == "__main__":
     benchmark_package()
-    benchmark_with_lineprofiler()
     cProfile.run("fib(35)")
