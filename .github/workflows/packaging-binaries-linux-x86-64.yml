@@ -13,7 +13,7 @@ jobs:
     runs-on: ${{ inputs.runner }}
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v4.2.2
 
       - name: Prepare environment
         run: |
@@ -36,7 +36,7 @@ jobs:
           done
 
       - name: Store distribution artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v4.6.2
         with:
           name: dist-artifact
           path: dist/*

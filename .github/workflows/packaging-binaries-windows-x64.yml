@@ -13,7 +13,7 @@ jobs:
     runs-on: ${{ inputs.runner }}
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v4.2.2
 
       # Equivalent of .common_steps_per_job_on_windows
       - name: Prepare environment
@@ -37,7 +37,7 @@ jobs:
           Get-ChildItem dist\*.whl | Rename-Item -NewName { $_.Name -replace "py3-none-any", "$tag" }
 
       - name: Store distribution artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v4.6.2
         with:
           name: dist-artifact
           path: dist/*
