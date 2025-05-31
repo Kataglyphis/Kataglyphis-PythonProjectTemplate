@@ -8,4 +8,4 @@ def main():
 
 if __name__ == "__main__":
     main()
-    time.sleep(10)  # <--- give py-spy time to attach
+    time.sleep(30)  # <--- give py-spy time to attach
