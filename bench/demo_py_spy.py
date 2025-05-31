@@ -3,9 +3,9 @@ from kataglyphispythonpackage.dummy import SimpleMLPreprocessor
 
 
 def main():
-    SimpleMLPreprocessor(10000).run_pipeline()
-
+    preprocessor = SimpleMLPreprocessor(n_samples=1_000_000)
+    result = preprocessor.run_pipeline()
 
 if __name__ == "__main__":
     main()
-    time.sleep(100)  # <--- give py-spy time to attach
+    # time.sleep(100)  # <--- give py-spy time to attach
