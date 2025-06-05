@@ -76,11 +76,11 @@ Use it as a starting point for creating and deploying your own Python projects.
 
 |            Category           |           Feature                             |  Implement Status  |
 |-------------------------------|-----------------------------------------------|:------------------:|
-|  **Packaging agnostic**   | Binary only deployment                            |         ✔️         |
-|                               | Lore ipsum                                   |         ✔️         |
-|  **Lore ipsum agnostic**   |                                               |                    |
-|                               | LORE IPSUM                            |         ✔️         |
-|                               |
+|  **Packaging agnostic**       | Binary only deployment                        |         ✔️         |
+|                               | Lore ipsum                                    |         ✔️         |
+|  **Infrastructure**           |                                               |                     |
+|                               | Add hydra support                             |         ❌         |
+|  **Lore ipsum agnostic**      |                                               |                     |
 |                               | Advanced unit testing                         |         🔶         |
 |                               | Advanced performance testing                  |         🔶         |
 |                               | Advanced fuzz testing                         |         🔶         |
