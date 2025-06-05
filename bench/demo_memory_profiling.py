@@ -1,11 +1,11 @@
 from memory_profiler import profile
-from kataglyphispythonpackage.fib import fib
+from kataglyphispythonpackage.dummy import SimpleMLPreprocessor
 
 
 @profile
-def run():
-    fib(35)
+def test_memory_profile():
+    ml = SimpleMLPreprocessor(1000)
+    ml.run_pipeline()
 
 
-if __name__ == "__main__":
-    run()
+test_memory_profile()

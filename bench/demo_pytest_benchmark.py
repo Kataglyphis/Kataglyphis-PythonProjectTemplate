@@ -1,7 +1,7 @@
 # test_fib.py
-from kataglyphispythonpackage.fib import fib
+from kataglyphispythonpackage.dummy import SimpleMLPreprocessor
 
 
-def test_fib_benchmark(benchmark):
-    result = benchmark(fib, 35)
-    assert result == 9227465
+def test_pipeline_benchmark(benchmark):
+    ml = SimpleMLPreprocessor(10000)
+    benchmark(ml.run_pipeline)

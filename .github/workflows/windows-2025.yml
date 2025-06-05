@@ -1,4 +1,4 @@
-# .github/workflows/ubuntu-24.04.yml
+# .github/workflows/windows-2025.yml
 name: Windows 2025 Workflow
 on:
   push:
@@ -30,6 +30,6 @@ jobs:
       runner: windows-2025
 
   packaging-binaries-linux:
-    uses: ./.github/workflows/packaging-binaries-windows-x64.yml
+    uses: ./.github/workflows/packaging-binaries-windows-x86-64.yml
     with:
       runner: windows-2025
