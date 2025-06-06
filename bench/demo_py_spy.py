@@ -3,7 +3,7 @@ from kataglyphispythonpackage.dummy import SimpleMLPreprocessor
 
 
 def main():
-    preprocessor = SimpleMLPreprocessor(n_samples=1_000_000)
+    preprocessor = SimpleMLPreprocessor(n_samples=1_000)
     result = preprocessor.run_pipeline()
     time.sleep(1000)
 
