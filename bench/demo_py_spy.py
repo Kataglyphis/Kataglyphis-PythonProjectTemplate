@@ -25,5 +25,7 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
-    # time.sleep(100)  # <--- give py-spy time to attach
+    for i in range(1, 101):         # Run main() 100 times
+        logger.debug(f"Run {i}/100 starting.")
+        main()
+        logger.debug(f"Run {i}/100 finished.\n")
