@@ -22,7 +22,7 @@ jobs:
     with:
       runner: ubuntu-24.04
       python-versions: '["3.8", "3.9", "3.11", "3.12", "3.13"]'
-      packagename: "kataglyphispythonproject"
+      packagename: "kataglyphispythonpackage"
 
   packaging-sources:
     uses: ./.github/workflows/packaging-sources.yml
