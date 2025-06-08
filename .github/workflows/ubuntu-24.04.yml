@@ -11,7 +11,11 @@ jobs:
     uses: ./.github/workflows/build-docs.yml
     with:
       runner: ubuntu-24.04
-
+    secrets:
+      SERVER: ${{ secrets.SERVER }}
+      USERNAME: ${{ secrets.USERNAME }}
+      PW: ${{ secrets.PW }}
+      
   static-analysis:
     uses: ./.github/workflows/static-analysis.yml
     with:
