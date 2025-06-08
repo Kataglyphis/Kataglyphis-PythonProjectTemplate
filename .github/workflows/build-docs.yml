@@ -7,7 +7,13 @@ on:
       runner:
         required: true
         type: string
-
+    secrets:
+      SERVER:
+        required: true
+      USERNAME:
+        required: true
+      PW:
+        required: true
 jobs:
   build-docs:
     name: Build Documentation
@@ -36,17 +42,16 @@ jobs:
           cp README.md docs/source/README.md
           cp CHANGELOG.md docs/source/CHANGELOG.md
 
-      - name: Build docs
+      
+      - name: Build web page
         run: |
-          mkdir public
           cd docs
           make html
-          cd ..
-          cp -r docs/build/html/* public
-          ls -R public
 
-      - name: Upload built docs
-        uses: actions/upload-artifact@v4.6.2
+      - name: 📂 Sync files to domain
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
         with:
-          name: public
-          path: public
+          server: ${{ secrets.SERVER }}
+          username: ${{ secrets.USERNAME }}
+          password: ${{ secrets.PW }}
+          local-dir: "./docs/build/html/"
