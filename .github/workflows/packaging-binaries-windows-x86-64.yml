@@ -1,0 +1,45 @@
+# .github/workflows/packaging-windows-binaries.yml
+name: Packaging Windows Binaries
+
+on:
+  workflow_call:
+    inputs:
+      runner:
+        required: true
+        type: string
+
+jobs:
+  packaging-windows:
+    runs-on: ${{ inputs.runner }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4.2.2
+        with:
+          submodules: recursive
+
+      # Equivalent of .common_steps_per_job_on_windows
+      - name: Prepare environment
+        run: |
+          python --version
+          pip --version
+          pip install ".[dev,test,docs]"
+
+      - name: Build Windows binaries
+        run: |
+          $env:CYTHONIZE = "True"
+          cp resources/packaging/binary/MANIFEST.in MANIFEST.in
+          pip install --upgrade setuptools wheel cython build twine
+          python setup.py build_ext --inplace
+          python -m build
+          # Adjust wheel rename for Windows
+          $python_version = (python -c "import sys; print(f'{sys.version_info.major}{sys.version_info.minor}')").Trim()
+          $python_abi = "cp$python_version"
+          $platform = "win_amd64"
+          $tag = "$python_abi-$python_abi-$platform"
+          Get-ChildItem dist\*.whl | Rename-Item -NewName { $_.Name -replace "py3-none-any", "$tag" }
+
+      - name: Store distribution artifact
+        uses: actions/upload-artifact@v4.6.2
+        with:
+          name: dist-artifact-${{ github.run_id }}
+          path: dist/*
