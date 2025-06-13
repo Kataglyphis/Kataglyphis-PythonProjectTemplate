@@ -166,10 +166,34 @@ There are three major ways to install this package in your environment:
 
 ### Deployment Recommendations (Hardware/Software)
 
-For insights into deploying Python packages into production as “binary only” wheels
-have a look into the corresponding workflows.
+#### Python package deployment in pure C
 
----
+For insights into deploying Python packages into production as “binary only” wheels
+have a look into the corresponding workflows.  
+
+After creating the wheel you can check content with the command:
+```bash
+# Unzip a .whl
+python -m zipfile --extract <ZIP_DATEI> <ZIEL_ORDNER>
+```
+
+This will print all available compatible tags for deployment
+
+```bash
+pip debug --verbose
+```
+
+**__NOTE:__** If you want to install your package editable and you previously deployed  
+it you will need to delete all Cython generated files first. You can use the following  
+command for it:  
+```bash  
+find . -type f \( -name '\*.c' -o -name '\*.cpp' -o -name '\*.so' -o -name '\*.pyd' -o -name '\*.html' \) -delete  
+```
+
+Or on windows ... do this  
+```powershell  
+Get-ChildItem -Path . -Recurse -File | Where-Object { $\_.Extension -in '.c', '.cpp', '.so', '.pyd', '.html' } | Remove-Item  
+```
 
 ## Tests
 
@@ -225,6 +249,8 @@ Mention credits for any third-party resources.
 
 List helpful literature, tutorials, or references that have guided this project.
 
+### Deployment
+[Protect source code](https://art-vasilyev.github.io/posts/protecting-source-code/)
 ---
 
 ## Demo
