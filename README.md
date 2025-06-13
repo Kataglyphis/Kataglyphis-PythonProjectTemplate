@@ -101,14 +101,15 @@ Use it as a starting point for creating and deploying your own Python projects.
 
 ### Useful Tools
 
-| Tool                                               | Description             |
-| -------------------------------------------------- | ----------------------- |
-| [ty](https://github.com/astral-sh/ty)              | ty                      |
-| [ruff](https://github.com/astral-sh/ruff)          | Linter                  |
-| [uv](https://github.com/astral-sh/uv)              | Command-line utility    |
-| [kedro](https://kedro.org/)                        | Infrastructure          |
-| [Scalene](https://github.com/plasma-umass/scalene) | Benchmarking            |
-| [py-spy](https://github.com/benfred/py-spy)        | Benchmarking            |
+| Tool                                                    | Description             |
+| ------------------------------------------------------- | ----------------------- |
+| [ty](https://github.com/astral-sh/ty)                   | ty                      |
+| [ruff](https://github.com/astral-sh/ruff)               | Linter                  |
+| [uv](https://github.com/astral-sh/uv)                   | Command-line utility    |
+| [kedro](https://kedro.org/)                             | Infrastructure          |
+| [miniforge3](https://github.com/conda-forge/miniforge)  | Infrastructure          |
+| [scalene](https://github.com/plasma-umass/scalene)      | Benchmarking            |
+| [py-spy](https://github.com/benfred/py-spy)             | Benchmarking            |
 
 ---
 
@@ -123,6 +124,11 @@ The versioning of the package can be viewed in [CHANGELOG.md](CHANGELOG.md).
 ### Setup
 
 Feel free to adjust for your own environment.
+F.e. create a virtual venv with a specific python version.
+
+```bash
+python3.10 -m venv .venv
+```
 
 ### Installation
 
