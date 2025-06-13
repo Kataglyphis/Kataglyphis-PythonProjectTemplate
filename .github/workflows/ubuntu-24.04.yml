@@ -21,7 +21,7 @@ jobs:
     uses: ./.github/workflows/pytest-matrix.yml
     with:
       runner: ubuntu-24.04
-      python-versions: '["3.8", "3.9", "3.11", "3.12", "3.13"]'
+      python-versions: '["3.8", "3.9", "3.10", "3.11", "3.12", "3.13"]'
       packagename: "kataglyphispythonproject"
 
   packaging-sources:
@@ -30,6 +30,6 @@ jobs:
       runner: ubuntu-24.04
 
   packaging-binaries-linux:
-    uses: ./.github/workflows/packaging-binaries-linux-x86-64.yml
+    uses: ./.github/workflows/packaging-binaries-linux.yml
     with:
       runner: ubuntu-24.04
