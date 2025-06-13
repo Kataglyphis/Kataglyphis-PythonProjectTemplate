@@ -44,7 +44,7 @@ jobs:
           python bench/demo_cprofile.py
           python bench/demo_line_profiler.py
           python -m memory_profiler bench/demo_memory_profiling.py
-          py-spy record -o profile.svg -- python bench/demo_py_spy.py
+          py-spy record --rate 200 --duration 45 -o profile.svg -- python bench/demo_py_spy.py
           pytest bench/demo_pytest_benchmark.py
 
       - name: Upload test results

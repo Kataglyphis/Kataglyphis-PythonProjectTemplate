@@ -11,7 +11,11 @@ jobs:
     uses: ./.github/workflows/build-docs.yml
     with:
       runner: ubuntu-24.04
-
+    secrets:
+      SERVER: ${{ secrets.SERVER }}
+      USERNAME: ${{ secrets.USERNAME }}
+      PW: ${{ secrets.PW }}
+      
   static-analysis:
     uses: ./.github/workflows/static-analysis.yml
     with:
@@ -23,6 +27,8 @@ jobs:
       runner: ubuntu-24.04
       python-versions: '["3.8", "3.9", "3.10", "3.11", "3.12", "3.13"]'
       packagename: "kataglyphispythonproject"
+      python-versions: '["3.8", "3.9", "3.11", "3.12", "3.13"]'
+      packagename: "kataglyphispythonpackage"
 
   packaging-sources:
     uses: ./.github/workflows/packaging-sources.yml
