@@ -29,7 +29,6 @@ jobs:
         with:
           python-version: "3.10"
 
-      # Equivalent of .common_steps_per_job_on_linux
       - name: Prepare environment
         run: |
           python3 --version
