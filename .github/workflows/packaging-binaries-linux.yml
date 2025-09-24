@@ -1,5 +1,4 @@
-# .github/workflows/packaging-binaries-linux-x86-64.yml
-name: Build Linux x86_64 Binaries
+name: Build Linux Binaries
 
 on:
   workflow_call:
@@ -13,7 +12,7 @@ jobs:
     runs-on: ${{ inputs.runner }}
     steps:
       - name: Checkout
-        uses: actions/checkout@v4.2.2
+        uses: actions/checkout@v5.0.0
         with:
           submodules: recursive
 
@@ -22,8 +21,17 @@ jobs:
           python3 -m pip install --upgrade pip
           pip install -e .[test]
 
-      - name: Build and rename Linux x86_64 wheels
+      - name: Build and rename Linux wheels
         run: |
+          ARCH="$(uname -m)"
+          # normalize common uname arch names to wheel platform tokens
+          case "$ARCH" in
+            x86_64) WHEEL_ARCH="x86_64" ;;
+            i386|i686) WHEEL_ARCH="i686" ;;
+            aarch64|arm64) WHEEL_ARCH="aarch64" ;;
+            armv7l) WHEEL_ARCH="armv7l" ;;
+            *) WHEEL_ARCH="$ARCH" ;;
+          esac
           export CYTHONIZE="True"
           cp resources/packaging/binary/MANIFEST.in MANIFEST.in
           pip install --upgrade setuptools wheel cython build twine
@@ -31,7 +39,7 @@ jobs:
           python3 -m build
           PYTHON_VERSION_SHORT=$(python3 -c 'import sys; print(f"{sys.version_info[0]}{sys.version_info[1]}")')
           PYTHON_ABI="cp${PYTHON_VERSION_SHORT}"
-          PLATFORM="manylinux1_x86_64"
+          PLATFORM="manylinux1_${WHEEL_ARCH}"
           TAG="${PYTHON_ABI}-${PYTHON_ABI}-${PLATFORM}"
           for f in dist/*.whl; do
             mv "$f" "$(echo $f | sed "s/py3-none-any/$TAG/")"
