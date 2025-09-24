@@ -33,7 +33,9 @@ classifiers = [
     "Programming Language :: Python :: 3.13",
 ]
 
-dependencies = ["numpy>=1.21.0,<2.0.0", "loguru", "cython", "tqdm", "pandas"]
+# you can put version constraint like this:
+# "numpy>=1.21.0,<2.0.0"
+dependencies = ["numpy", "loguru", "cython", "tqdm", "pandas"]
 
 [project.optional-dependencies]
 test = [
