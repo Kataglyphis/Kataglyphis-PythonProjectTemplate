@@ -31,12 +31,23 @@ class ClangBuildExt(build_ext):
             original_spawn = self.compiler.spawn
 
             def clang_spawn(cmd):
-                if cmd and (cmd[0] in {"cl.exe", "cl"}):
+                print("I am in clang_spawn")
+                if not cmd:
+                    return original_spawn(cmd)
+
+                print(cmd[0])
+                exe = cmd[0].strip('"')  # remove surrounding quotes if any
+                name = os.path.basename(exe).lower()
+
+                if name in {"cl.exe", "cl"}:
+                    print("cmd[0] recognized as cl")
                     cmd[0] = "clang-cl"
                     print(f"Using clang-cl compiler: {' '.join(cmd)}")
-                elif cmd and (cmd[0] in {"link.exe", "link"}):
+                elif name in {"link.exe", "link"}:
+                    print("cmd[0] recognized as link")
                     cmd[0] = "lld-link.exe"
                     print(f"Using lld-link linker: {' '.join(cmd)}")
+
                 return original_spawn(cmd)
 
             self.compiler.spawn = clang_spawn
