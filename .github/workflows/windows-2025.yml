@@ -24,7 +24,7 @@ jobs:
     with:
       runner: windows-2025
 
-  packaging-binaries-linux:
+  packaging-binaries-windows:
     uses: ./.github/workflows/packaging-binaries-windows-x86-64.yml
     with:
       runner: windows-2025

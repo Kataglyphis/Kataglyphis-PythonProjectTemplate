@@ -8,6 +8,11 @@ on:
         required: true
         type: string
 
+env:
+  ACTIONS_STEP_DEBUG: true
+  ACTIONS_RUNNER_DEBUG: true
+  CLANG_VERSION: 21.1.1
+
 jobs:
   packaging-windows:
     runs-on: ${{ inputs.runner }}
@@ -15,7 +20,14 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v5.0.0
         with:
+          fetch-depth: 0
           submodules: recursive
+
+      - name: Install Windows Dependencies
+        shell: pwsh
+        run: |
+          ./scripts/windows/setup-dependencies.ps1 `
+            -ClangVersion  ${{ env.CLANG_VERSION }} `
 
       # Equivalent of .common_steps_per_job_on_windows
       - name: Prepare environment

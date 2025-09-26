@@ -131,6 +131,16 @@ F.e. create a virtual venv with a specific python version.
 python3.10 -m venv .venv
 ```
 
+### Pre commit hook
+```bash
+uv venv
+source .venv/bin/activate # .venv/Scripts/activate on pwsh
+uv pip install pre-commit
+pre-commit install
+# run on all files once (optional)
+pre-commit run --all-files
+```
+
 ### Installation
 
 There are three major ways to install this package in your environment:
