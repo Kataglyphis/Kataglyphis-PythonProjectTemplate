@@ -40,7 +40,7 @@ jobs:
           Write-Host "PATH (truncated):"
           $Env:PATH.Split(';')[0..20] -join ';' | Write-Host
           Write-Host "Python version (if present):"
-          python --version -ErrorAction SilentlyContinue || Write-Host "python not found"
+          python3 --version -ErrorAction SilentlyContinue || Write-Host "python not found"
           Write-Host "cl.exe available?"
           Get-Command cl.exe -ErrorAction SilentlyContinue | ForEach-Object { $_.Path } || Write-Host "cl.exe not found (will try vcvarsall during build)"
           Write-Host "clang available?"
@@ -73,7 +73,7 @@ jobs:
         shell: pwsh
         run: |
           Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass -Force
-          python --version
+          python3 --version
           pip --version
           pip install --upgrade pip --verbose
           pip install ".[dev,test,docs]" --verbose
@@ -109,10 +109,10 @@ jobs:
           rem --- Install build deps and build ---
           pip install --upgrade setuptools wheel cython build twine --verbose
           echo Running build_ext --inplace
-          python setup.py build_ext --inplace
+          python3 setup.py build_ext --inplace
 
           echo Running python -m build
-          python -m build
+          python3 -m build
 
           rem --- Rename universal wheels to cpXX-cpXX-win_amd64 tag ---
           powershell -NoProfile -Command ^
