@@ -88,62 +88,6 @@ jobs:
 
           Write-Host "=== Build: attempt to import MSVC environment (vcvars) via vswhere if available ==="
 
-          # Use bracket syntax for ProgramFiles(x86) to avoid parser issues
-          $vswherePath = Join-Path $Env['ProgramFiles(x86)'] "Microsoft Visual Studio\Installer\vswhere.exe"
-          $VSINSTALL = $null
-
-          if (Test-Path $vswherePath) {
-            Write-Host "Found vswhere at $vswherePath"
-            # vswhere prints the installation path
-            $VSINSTALL = & $vswherePath -latest -products * -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -property installationPath 2>$null
-            $VSINSTALL = $VSINSTALL.Trim()
-            if (-not $VSINSTALL) { $VSINSTALL = $null }
-          } else {
-            Write-Host "vswhere not found at $vswherePath"
-          }
-
-          if ($VSINSTALL) {
-            Write-Host "Found Visual Studio at: $VSINSTALL"
-            $vcvars = Join-Path $VSINSTALL "VC\Auxiliary\Build\vcvarsall.bat"
-            if (-not (Test-Path $vcvars)) {
-              Write-Host "vcvarsall.bat not present at expected location: $vcvars"
-            } else {
-              Write-Host "Calling vcvarsall.bat x64 and importing environment into PowerShell session..."
-              # call vcvarsall in a cmd shell and capture its environment output (set)
-              $cmd = '"' + $vcvars + '" x64 >nul && set'
-              $envOutput = & cmd /c $cmd
-
-              # parse and import env vars into current PowerShell process
-              $lines = $envOutput -split "`r?`n"
-              foreach ($ln in $lines) {
-                if (-not $ln) { continue }
-                $idx = $ln.IndexOf('=')
-                if ($idx -lt 1) { continue }
-                $name = $ln.Substring(0,$idx)
-                $value = $ln.Substring($idx+1)
-
-                try {
-                  # use indexer syntax to handle names with special characters
-                  $Env[$name] = $value
-                } catch {
-                  Write-Host "Warning: couldn't set env var '$name' via `\$Env[]` — trying fallbacks"
-                  try {
-                    Set-Item -Path ("Env:\" + $name) -Value $value -ErrorAction Stop
-                  } catch {
-                    try {
-                      [System.Environment]::SetEnvironmentVariable($name, $value, 'Process')
-                    } catch {
-                      Write-Host "Warning: couldn't set env var '$name' at all: $($_.Exception.Message)"
-                    }
-                  }
-                }
-              }
-              Write-Host "Imported MSVC environment variables into PowerShell session."
-            }
-          } else {
-            Write-Host "No Visual Studio installation found via vswhere. Will attempt to build with clang if available."
-          }
-
           Write-Host "=== Build: copy MANIFEST.in if present ==="
           $manifestSrc = Join-Path $Env:GITHUB_WORKSPACE "resources\packaging\binary\MANIFEST.in"
           if (Test-Path $manifestSrc) {
