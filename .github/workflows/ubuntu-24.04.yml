@@ -21,6 +21,7 @@ jobs:
       packagename: "kataglyphispythonpackage"
   
   build-docs:
+    needs: pytest-matrix
     uses: ./.github/workflows/build-docs.yml
     with:
       runner: ubuntu-24.04
