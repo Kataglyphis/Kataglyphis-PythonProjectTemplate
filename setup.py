@@ -9,6 +9,9 @@ from setuptools.command.build_ext import build_ext
 CYTHONIZE_RAW = os.getenv("CYTHONIZE", "0")
 CYTHONIZE = str(CYTHONIZE_RAW).strip().lower() in ("1", "true", "yes", "on")
 
+if CYTHONIZE:
+    from Cython.Build import cythonize
+
 # Compiler-Umgebung nur plattformabhängig setzen
 if sys.platform == "win32":
     os.environ["CC"] = "clang-cl"
