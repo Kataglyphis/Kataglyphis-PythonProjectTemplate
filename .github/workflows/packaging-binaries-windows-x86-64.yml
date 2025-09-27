@@ -24,7 +24,7 @@ jobs:
       - name: Set up Python 3.13
         uses: actions/setup-python@v6.0.0
         with:
-          python-version: "3.13" 
+          python-version: "3.13"
 
       - name: Runner diagnostics & ensure Windows
         shell: pwsh
@@ -40,7 +40,7 @@ jobs:
           Write-Host "PATH (truncated):"
           $Env:PATH.Split(';')[0..20] -join ';' | Write-Host
           Write-Host "Python version (if present):"
-          python3 --version || Write-Host "python not found"
+          python3 --version -ErrorAction SilentlyContinue || Write-Host "python3 not found"
           Write-Host "cl.exe available?"
           Get-Command cl.exe -ErrorAction SilentlyContinue | ForEach-Object { $_.Path } || Write-Host "cl.exe not found (will try vcvarsall during build)"
           Write-Host "clang available?"
@@ -78,52 +78,108 @@ jobs:
           pip install --upgrade pip --verbose
           pip install ".[dev,test,docs]" --verbose
 
-      - name: Build Windows binaries (initialize VS tools then build)
-        shell: cmd
+      - name: Build Windows binaries (pure PowerShell, import MSVC env if present)
+        shell: pwsh
         env:
           CYTHONIZE: True
         run: |
-          @echo off
-          rem --- attempt to locate Visual Studio via vswhere ---
-          set "VSINSTALL="
-          if exist "%ProgramFiles(x86)%\Microsoft Visual Studio\Installer\vswhere.exe" (
-            for /f "delims=" %%I in ('"%ProgramFiles(x86)%\Microsoft Visual Studio\Installer\vswhere.exe" -latest -products * -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -property installationPath') do set "VSINSTALL=%%I"
-          )
+          Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass -Force
+          $ErrorActionPreference = 'Stop'
 
-          if defined VSINSTALL (
-            echo Found Visual Studio at %VSINSTALL%
-            echo Calling vcvarsall.bat x64 to initialize MSVC environment...
-            call "%VSINSTALL%\VC\Auxiliary\Build\vcvarsall.bat" x64
-          ) else (
-            echo WARNING: Visual Studio (vc tools) not found via vswhere. Build will attempt to proceed with clang if available.
-          )
+          Write-Host "=== Build: attempt to import MSVC environment (vcvars) via vswhere if available ==="
 
-          rem --- Copy MANIFEST.in if present ---
-          if exist resources\packaging\binary\MANIFEST.in (
-            copy /Y resources\packaging\binary\MANIFEST.in MANIFEST.in >nul
-            echo Copied MANIFEST.in
-          ) else (
-            echo MANIFEST.in not found at resources\packaging\binary\MANIFEST.in
-          )
+          $vswherePath = Join-Path $Env:ProgramFiles(x86) "Microsoft Visual Studio\Installer\vswhere.exe"
+          $VSINSTALL = $null
 
-          rem --- Install build deps and build ---
+          if (Test-Path $vswherePath) {
+            Write-Host "Found vswhere at $vswherePath"
+            # vswhere prints the installation path
+            $VSINSTALL = & $vswherePath -latest -products * -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -property installationPath 2>$null
+            $VSINSTALL = $VSINSTALL.Trim()
+            if (-not $VSINSTALL) { $VSINSTALL = $null }
+          } else {
+            Write-Host "vswhere not found at $vswherePath"
+          }
+
+          if ($VSINSTALL) {
+            Write-Host "Found Visual Studio at: $VSINSTALL"
+            $vcvars = Join-Path $VSINSTALL "VC\Auxiliary\Build\vcvarsall.bat"
+            if (-not (Test-Path $vcvars)) {
+              Write-Host "vcvarsall.bat not present at expected location: $vcvars"
+            } else {
+              Write-Host "Calling vcvarsall.bat x64 and importing environment into PowerShell session..."
+              # call vcvarsall in a cmd shell and capture its environment output (set)
+              $cmd = '"' + $vcvars + '" x64 >nul && set'
+              $envOutput = & cmd /c $cmd
+
+              # parse and import env vars into current PowerShell process
+              $lines = $envOutput -split "`r?`n"
+              foreach ($ln in $lines) {
+                if (-not $ln) { continue }
+                $idx = $ln.IndexOf('=')
+                if ($idx -lt 1) { continue }
+                $name = $ln.Substring(0,$idx)
+                $value = $ln.Substring($idx+1)
+                # Only import a subset? We import all to mimic vcvars behavior
+                try {
+                  $Env:$name = $value
+                } catch {
+                  Write-Host "Warning: couldn't set env var $name"
+                }
+              }
+              Write-Host "Imported MSVC environment variables into PowerShell session."
+            }
+          } else {
+            Write-Host "No Visual Studio installation found via vswhere. Will attempt to build with clang if available."
+          }
+
+          Write-Host "=== Build: copy MANIFEST.in if present ==="
+          $manifestSrc = Join-Path $Env:GITHUB_WORKSPACE "resources\packaging\binary\MANIFEST.in"
+          if (Test-Path $manifestSrc) {
+            Copy-Item -Path $manifestSrc -Destination (Join-Path $Env:GITHUB_WORKSPACE "MANIFEST.in") -Force
+            Write-Host "Copied MANIFEST.in"
+          } else {
+            Write-Host "MANIFEST.in not found at $manifestSrc; continuing"
+          }
+
+          Write-Host "=== Build: install build dependencies ==="
           pip install --upgrade setuptools wheel cython build twine --verbose
-          echo Running build_ext --inplace
+
+          Write-Host "=== Build: python3 setup.py build_ext --inplace ==="
           python3 setup.py build_ext --inplace
 
-          echo Running python -m build
+          Write-Host "=== Build: python3 -m build ==="
           python3 -m build
 
-          rem --- Rename universal wheels to cpXX-cpXX-win_amd64 tag ---
-          powershell -NoProfile -Command ^
-            "$python_version = (python -c 'import sys; print(f\"{sys.version_info.major}{sys.version_info.minor}\")'); ^
-             $python_abi = 'cp' + $python_version; ^
-             $tag = $python_abi + '-' + $python_abi + '-win_amd64'; ^
-             Get-ChildItem dist\\*.whl -ErrorAction SilentlyContinue | ForEach-Object { ^
-               $new = ($_.Name -replace 'py3-none-any', $tag); ^
-               Write-Host \"Renaming $($_.Name) -> $new\"; ^
-               Rename-Item $_.FullName -NewName $new -Force ^
-             }"
+          Write-Host "=== Build: rename wheels to cpXY-cpXY-win_amd64 ==="
+          $python_version = (python3 -c 'import sys; print(f"{sys.version_info.major}{sys.version_info.minor}")').Trim()
+          if (-not $python_version) {
+            Write-Error "Could not detect python version"
+            exit 1
+          }
+          $python_abi = "cp$python_version"
+          $tag = "$python_abi-$python_abi-win_amd64"
+          $distDir = Join-Path $Env:GITHUB_WORKSPACE "dist"
+          if (-not (Test-Path $distDir)) {
+            Write-Error "dist directory not found: $distDir"
+            exit 1
+          }
+          $wheels = Get-ChildItem -Path $distDir -Filter '*.whl' -ErrorAction SilentlyContinue
+          if (-not $wheels) {
+            Write-Error "No wheel files found under $distDir"
+            exit 1
+          }
+          foreach ($w in $wheels) {
+            $new = $w.Name -replace 'py3-none-any', $tag
+            if ($new -ne $w.Name) {
+              Write-Host "Renaming $($w.Name) -> $new"
+              Rename-Item -Path $w.FullName -NewName $new -Force
+            } else {
+              Write-Host "Skipping rename for $($w.Name) (pattern not matched)"
+            }
+          }
+
+          Write-Host "=== Build finished ==="
 
       - name: Store distribution artifact
         uses: actions/upload-artifact@v4.6.2
