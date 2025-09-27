@@ -21,6 +21,11 @@ jobs:
           fetch-depth: 0
           submodules: recursive
 
+      - name: Set up Python 3.13
+        uses: actions/setup-python@v6.0.0
+        with:
+          python-version: "3.13"
+
       - name: Runner diagnostics & ensure Windows
         shell: pwsh
         run: |
@@ -28,7 +33,6 @@ jobs:
           Write-Host "OS env: $Env:OS"
           Write-Host "Runner label (runs-on input): ${{ inputs.runner }}"
           Write-Host "GITHUB_WORKSPACE: $Env:GITHUB_WORKSPACE"
-          Write-Host "Is Windows (PowerShell):"
           if ($Env:OS -ne 'Windows_NT') {
             Write-Error "This reusable workflow requires a Windows runner (e.g. 'windows-2022' or 'windows-latest'). Current runner is not Windows. Aborting."
             exit 1
@@ -38,15 +42,10 @@ jobs:
           Write-Host "Python version (if present):"
           python --version -ErrorAction SilentlyContinue || Write-Host "python not found"
           Write-Host "cl.exe available?"
-          Get-Command cl.exe -ErrorAction SilentlyContinue | ForEach-Object { $_.Path } || Write-Host "cl.exe not found"
+          Get-Command cl.exe -ErrorAction SilentlyContinue | ForEach-Object { $_.Path } || Write-Host "cl.exe not found (will try vcvarsall during build)"
           Write-Host "clang available?"
           Get-Command clang -ErrorAction SilentlyContinue | ForEach-Object { $_.Path } || Write-Host "clang not found"
           Write-Host "=== end diagnostics ==="
-
-      - name: Set up Python 3.13
-        uses: actions/setup-python@v6.0.0
-        with:
-          python-version: "3.13"
 
       - name: Install Windows Dependencies (safe call)
         shell: pwsh
@@ -57,14 +56,11 @@ jobs:
             Write-Error "Dependency setup script not found at $script"
             exit 1
           }
-          # Run the script non-interactively with ExecutionPolicy bypass
           pwsh -NoProfile -ExecutionPolicy Bypass -File $script -ClangVersion $Env:CLANG_VERSION
 
       - name: Push Clang and LLVM to Path
         shell: pwsh
         run: |
-          # Add-Content must append newline-separated entries to GITHUB_PATH.
-          # Ensure path exists (it does on GitHub runners) and append newline.
           $llvmPath = "C:\Program Files\LLVM\bin"
           if (Test-Path $llvmPath) {
             Add-Content -Path $Env:GITHUB_PATH -Value ("{0}`n" -f $llvmPath)
@@ -73,7 +69,6 @@ jobs:
             Write-Host "LLVM path not found ($llvmPath). Continuing; setup-dependencies may have installed elsewhere."
           }
 
-      # Equivalent of .common_steps_per_job_on_windows
       - name: Prepare environment
         shell: pwsh
         run: |
@@ -81,55 +76,59 @@ jobs:
           python --version
           pip --version
           pip install --upgrade pip --verbose
-          # install extras; will fail loudly if extras are missing
           pip install ".[dev,test,docs]" --verbose
 
-      - name: Build Windows binaries
-        shell: pwsh
+      - name: Build Windows binaries (initialize VS tools then build)
+        shell: cmd
+        env:
+          CYTHONIZE: True
         run: |
-          Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass -Force
-          $env:CYTHONIZE = "True"
+          @echo off
+          rem --- attempt to locate Visual Studio via vswhere ---
+          set "VSINSTALL="
+          if exist "%ProgramFiles(x86)%\Microsoft Visual Studio\Installer\vswhere.exe" (
+            for /f "delims=" %%I in ('"%ProgramFiles(x86)%\Microsoft Visual Studio\Installer\vswhere.exe" -latest -products * -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -property installationPath') do set "VSINSTALL=%%I"
+          )
 
-          # Copy manifest (use Windows path separators)
-          $manifestSrc = Join-Path $Env:GITHUB_WORKSPACE "resources\packaging\binary\MANIFEST.in"
-          if (-Not (Test-Path $manifestSrc)) {
-            Write-Host "Warning: MANIFEST.in not found at $manifestSrc; continuing without copy"
-          } else {
-            Copy-Item -Path $manifestSrc -Destination (Join-Path $Env:GITHUB_WORKSPACE "MANIFEST.in") -Force
-            Write-Host "Copied MANIFEST.in"
-          }
+          if defined VSINSTALL (
+            echo Found Visual Studio at %VSINSTALL%
+            echo Calling vcvarsall.bat x64 to initialize MSVC environment...
+            call "%VSINSTALL%\VC\Auxiliary\Build\vcvarsall.bat" x64
+          ) else (
+            echo WARNING: Visual Studio (vc tools) not found via vswhere. Build will attempt to proceed with clang if available.
+          )
 
+          rem --- Copy MANIFEST.in if present ---
+          if exist resources\packaging\binary\MANIFEST.in (
+            copy /Y resources\packaging\binary\MANIFEST.in MANIFEST.in >nul
+            echo Copied MANIFEST.in
+          ) else (
+            echo MANIFEST.in not found at resources\packaging\binary\MANIFEST.in
+          )
+
+          rem --- Install build deps and build ---
           pip install --upgrade setuptools wheel cython build twine --verbose
-
-          Write-Host "Running build_ext --inplace"
+          echo Running build_ext --inplace
           python setup.py build_ext --inplace
 
-          Write-Host "Running python -m build"
-          # use -n (no-isolation) only if you understand implications; leave default isolation to be safe
+          echo Running python -m build
           python -m build
 
-          # Adjust wheel rename for Windows: replace the universal tag with the specific cpXY-cpXY-win_amd64 tag
-          try {
-            $python_version = (python -c 'import sys; print(f"{sys.version_info.major}{sys.version_info.minor}")').Trim()
-          } catch {
-            Write-Error "Couldn't detect python minor version. Aborting wheel rename."
-            exit 1
-          }
-          $python_abi = "cp$python_version"
-          $platform = "win_amd64"
-          $tag = "$python_abi-$python_abi-$platform"
-          Write-Host "Renaming wheels to use tag: $tag"
+          rem --- Rename universal wheels to cpXX-cpXX-win_amd64 tag ---
+          powershell -NoProfile -Command ^
+            "$python_version = (python -c 'import sys; print(f\"{sys.version_info.major}{sys.version_info.minor}\")'); ^
+             $python_abi = 'cp' + $python_version; ^
+             $tag = $python_abi + '-' + $python_abi + '-win_amd64'; ^
+             Get-ChildItem dist\\*.whl -ErrorAction SilentlyContinue | ForEach-Object { ^
+               $new = ($_.Name -replace 'py3-none-any', $tag); ^
+               Write-Host \"Renaming $($_.Name) -> $new\"; ^
+               Rename-Item $_.FullName -NewName $new -Force ^
+             }"
 
-          $wheels = Get-ChildItem -Path (Join-Path $Env:GITHUB_WORKSPACE "dist") -Filter "*.whl" -ErrorAction SilentlyContinue
-          if (-not $wheels) {
-            Write-Error "No wheel files found under dist/. Build either failed or produced no wheels."
-            exit 1
-          }
-          foreach ($w in $wheels) {
-            $newname = $w.Name -replace "py3-none-any", $tag
-            Write-Host "Renaming $($w.Name) -> $newname"
-            Rename-Item -Path $w.FullName -NewName $newname -Force
-          }
+          if not exist dist\*.whl (
+            echo ERROR: No wheel produced under dist\.
+            exit /b 1
+          )
 
       - name: Store distribution artifact
         uses: actions/upload-artifact@v4.6.2
