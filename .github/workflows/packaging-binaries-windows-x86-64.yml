@@ -29,6 +29,12 @@ jobs:
           ./scripts/windows/setup-dependencies.ps1 `
             -ClangVersion  ${{ env.CLANG_VERSION }} `
 
+      # this is necessary ... windows and paths ...
+      - name: Push Clang and LLVM to Path
+        shell: pwsh
+        run: |
+          Add-Content -Path $Env:GITHUB_PATH -Value 'C:\Program Files\LLVM\bin'
+      
       # Equivalent of .common_steps_per_job_on_windows
       - name: Prepare environment
         run: |
