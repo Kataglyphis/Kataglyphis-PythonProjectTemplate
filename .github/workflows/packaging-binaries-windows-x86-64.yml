@@ -88,7 +88,8 @@ jobs:
 
           Write-Host "=== Build: attempt to import MSVC environment (vcvars) via vswhere if available ==="
 
-          $vswherePath = Join-Path $Env:ProgramFiles(x86) "Microsoft Visual Studio\Installer\vswhere.exe"
+          # Use bracket syntax for ProgramFiles(x86) to avoid parser issues
+          $vswherePath = Join-Path $Env['ProgramFiles(x86)'] "Microsoft Visual Studio\Installer\vswhere.exe"
           $VSINSTALL = $null
 
           if (Test-Path $vswherePath) {
@@ -120,11 +121,21 @@ jobs:
                 if ($idx -lt 1) { continue }
                 $name = $ln.Substring(0,$idx)
                 $value = $ln.Substring($idx+1)
-                # Only import a subset? We import all to mimic vcvars behavior
+
                 try {
-                  $Env:$name = $value
+                  # use indexer syntax to handle names with special characters
+                  $Env[$name] = $value
                 } catch {
-                  Write-Host "Warning: couldn't set env var $name"
+                  Write-Host "Warning: couldn't set env var '$name' via `\$Env[]` — trying fallbacks"
+                  try {
+                    Set-Item -Path ("Env:\" + $name) -Value $value -ErrorAction Stop
+                  } catch {
+                    try {
+                      [System.Environment]::SetEnvironmentVariable($name, $value, 'Process')
+                    } catch {
+                      Write-Host "Warning: couldn't set env var '$name' at all: $($_.Exception.Message)"
+                    }
+                  }
                 }
               }
               Write-Host "Imported MSVC environment variables into PowerShell session."
