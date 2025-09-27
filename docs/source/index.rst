@@ -5,6 +5,11 @@
 
 kataglyphispythonpackage documentation
 =============================
+Coverage Reports
+===============
+
+* `HTML Coverage Report <_static/coverage/index.html>`_
+* `XML Coverage Report <_static/coverage.xml>`_
 
 
 .. toctree::
