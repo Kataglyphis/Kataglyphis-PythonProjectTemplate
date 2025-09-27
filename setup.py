@@ -5,10 +5,9 @@ from pathlib import Path
 from setuptools import setup, Extension
 from setuptools.command.build_ext import build_ext
 
-# Nur als bool interpretieren, wenn CYTHONIZE=1 gesetzt ist
-CYTHONIZE = os.getenv("CYTHONIZE", "0") == "1"
-if CYTHONIZE:
-    from Cython.Build import cythonize
+# Accept several truthy values for CYTHONIZE (so "True", True, "1", "true" all work)
+CYTHONIZE_RAW = os.getenv("CYTHONIZE", "0")
+CYTHONIZE = str(CYTHONIZE_RAW).strip().lower() in ("1", "true", "yes", "on")
 
 # Compiler-Umgebung nur plattformabhängig setzen
 if sys.platform == "win32":
