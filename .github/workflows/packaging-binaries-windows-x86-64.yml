@@ -40,7 +40,7 @@ jobs:
           Write-Host "PATH (truncated):"
           $Env:PATH.Split(';')[0..20] -join ';' | Write-Host
           Write-Host "Python version (if present):"
-          python3 --version -ErrorAction SilentlyContinue || Write-Host "python3 not found"
+          python3 --version || Write-Host "python3 not found"
           Write-Host "cl.exe available?"
           Get-Command cl.exe -ErrorAction SilentlyContinue | ForEach-Object { $_.Path } || Write-Host "cl.exe not found (will try vcvarsall during build)"
           Write-Host "clang available?"
