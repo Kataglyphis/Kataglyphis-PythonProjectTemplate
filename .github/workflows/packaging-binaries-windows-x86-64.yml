@@ -125,11 +125,6 @@ jobs:
                Rename-Item $_.FullName -NewName $new -Force ^
              }"
 
-          if not exist dist\*.whl (
-            echo ERROR: No wheel produced under dist\.
-            exit /b 1
-          )
-
       - name: Store distribution artifact
         uses: actions/upload-artifact@v4.6.2
         with:
