@@ -1,18 +1,16 @@
+
 # .github/workflows/packaging-windows-binaries.yml
 name: Packaging Windows Binaries
-
 on:
   workflow_call:
     inputs:
       runner:
         required: true
         type: string
-
 env:
   ACTIONS_STEP_DEBUG: true
   ACTIONS_RUNNER_DEBUG: true
   CLANG_VERSION: 21.1.1
-
 jobs:
   packaging-windows:
     runs-on: ${{ inputs.runner }}
@@ -22,7 +20,6 @@ jobs:
         with:
           fetch-depth: 0
           submodules: recursive
-
       - name: Set up Python 3.13
         uses: actions/setup-python@v6.0.0
         with:
@@ -32,8 +29,8 @@ jobs:
         shell: pwsh
         run: |
           ./scripts/windows/setup-dependencies.ps1 `
-            -ClangVersion  ${{ env.CLANG_VERSION }} `
-
+            -ClangVersion  ${{ env.CLANG_VERSION }}
+      
       # this is necessary ... windows and paths ...
       - name: Push Clang and LLVM to Path
         shell: pwsh
@@ -42,12 +39,14 @@ jobs:
       
       # Equivalent of .common_steps_per_job_on_windows
       - name: Prepare environment
+        shell: pwsh
         run: |
           python --version
           pip --version
           pip install ".[dev,test,docs]"
-
+      
       - name: Build Windows binaries
+        shell: pwsh
         run: |
           $env:CYTHONIZE = "True"
           cp resources/packaging/binary/MANIFEST.in MANIFEST.in
@@ -60,7 +59,7 @@ jobs:
           $platform = "win_amd64"
           $tag = "$python_abi-$python_abi-$platform"
           Get-ChildItem dist\*.whl | Rename-Item -NewName { $_.Name -replace "py3-none-any", "$tag" }
-
+      
       - name: Store distribution artifact
         uses: actions/upload-artifact@v4.6.2
         with:
