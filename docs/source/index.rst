@@ -44,16 +44,15 @@ The test reports include:
    :maxdepth: 2
    :caption: Modules
 
-Test Reports
-============
-
 .. toctree::
-   :maxdepth: 1
+   :maxdepth: 2
+   :caption: Contents
 
-   _static/test_results/pytest-report-3.10.md
-   _static/pytest-report-3.11.md
-   _static/pytest-report-3.12.md
-   _static/pytest-report-3.13.md
+   modules
+   test_results/pytest-report-3.10
+   test_results/pytest-report-3.11
+   test_results/pytest-report-3.12
+   test_results/pytest-report-3.13
 
 Indices and tables
 ==================
