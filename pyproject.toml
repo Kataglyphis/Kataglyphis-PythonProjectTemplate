@@ -47,6 +47,7 @@ test = [
     "py-spy",           # profiling
     "pytest-cov",
     "pytest-md-report",
+    "pytest-md",
     "pytest-html",
     "codespell",
     "mypy",             # type checking
