@@ -104,6 +104,14 @@ jobs:
               echo "Copied $(basename "$xml_file") to $TEST_RESULTS_DST/"
             fi
           done
+
+          # Copy pytest Markdown reports
+          echo "Copying pytest Markdown reports..."
+          for md_file in "$SRC"/pytest-report-*.md; do
+            if [ -f "$md_file" ]; then
+              cp "$md_file" "$STATIC_DIR/"
+            fi
+          done
       
       - name: Build web page
         run: |
