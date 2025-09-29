@@ -55,7 +55,7 @@ jobs:
         if: ${{ inputs.runner == 'windows-2025' }}
         shell: pwsh
         run: |
-          pytest tests/unit `
+          pytest tests/unit -v `
           --cov=kataglyphispythonpackage `
           --cov-report=term-missing `
           --cov-report=html:docs/test_results/coverage-html-3.10 `
@@ -64,7 +64,6 @@ jobs:
           --html=docs/test_results/pytest-report-${{ matrix.python-version }}.html `
           --self-contained-html `
           --md-report `
-          --md-report-flavor gfm --md-report-exclude-outcomes passed skipped xpassed `
           --md-report-output docs/test_results/pytest-report-${{ matrix.python-version }}.md
           python bench/demo_cprofile.py
           python bench/demo_line_profiler.py
@@ -75,7 +74,7 @@ jobs:
       - name: Run tests
         if: ${{ inputs.runner != 'windows-2025' }}
         run: |
-          pytest tests/unit \
+          pytest tests/unit -v \
             --cov=${{ inputs.packagename }} \
             --cov-report=term-missing \
             --cov-report=html:docs/test_results/coverage-html-${{ matrix.python-version }} \
@@ -84,7 +83,6 @@ jobs:
             --html=docs/test_results/pytest-report-${{ matrix.python-version }}.html \
             --self-contained-html \
             --md-report \
-            --md-report-flavor gfm --md-report-exclude-outcomes passed skipped xpassed \
             --md-report-output docs/test_results/pytest-report-${{ matrix.python-version }}.md
           python bench/demo_cprofile.py
           python bench/demo_cprofile.py
