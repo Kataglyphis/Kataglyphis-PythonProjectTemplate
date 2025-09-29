@@ -64,6 +64,8 @@ jobs:
           --html=docs/test_results/pytest-report-${{ matrix.python-version }}.html `
           --self-contained-html `
           --md-report `
+          --md-report-flavor gfm `
+          --md-report-exclude-outcomes passed skipped xpassed `
           --md-report-output docs/test_results/pytest-report-${{ matrix.python-version }}.md
           python bench/demo_cprofile.py
           python bench/demo_line_profiler.py
@@ -83,8 +85,9 @@ jobs:
             --html=docs/test_results/pytest-report-${{ matrix.python-version }}.html \
             --self-contained-html \
             --md-report \
+            --md-report-flavor gfm \
+            --md-report-exclude-outcomes passed skipped xpassed \
             --md-report-output docs/test_results/pytest-report-${{ matrix.python-version }}.md
-          python bench/demo_cprofile.py
           python bench/demo_cprofile.py
           python bench/demo_line_profiler.py
           python -m memory_profiler bench/demo_memory_profiling.py
