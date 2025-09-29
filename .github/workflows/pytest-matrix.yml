@@ -39,7 +39,24 @@ jobs:
           python -m pip install --upgrade pip
           pip install -e .[test]
 
+      - name: Run tests (Windows pwsh)
+        if: ${{ inputs.runner == 'windows-2025' }}
+        shell: pwsh
+        run: |
+          pytest tests/unit `
+          --cov=kataglyphispythonpackage `
+          --cov-report=term-missing `
+          --cov-report=html:docs/test_results/coverage-html-3.10 `
+          --cov-report=xml:docs/test_results/coverage-3.10.xml `
+          --junitxml=docs/test_results/report-3.10.xml
+          python bench/demo_cprofile.py
+          python bench/demo_line_profiler.py
+          python -m memory_profiler bench/demo_memory_profiling.py
+          py-spy record --rate 200 --duration 45 -o profile.svg -- python bench/demo_py_spy.py
+          pytest bench/demo_pytest_benchmark.py
+  
       - name: Run tests
+        if: ${{ inputs.runner != 'windows-2025' }}
         run: |
           pytest tests/unit \
             --cov=${{ inputs.packagename }} \
