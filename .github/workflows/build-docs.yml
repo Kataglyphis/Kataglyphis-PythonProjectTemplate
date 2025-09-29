@@ -105,11 +105,15 @@ jobs:
             fi
           done
 
-          # Copy pytest Markdown reports
-          echo "Copying pytest Markdown reports..."
+          count=0
+
           for md_file in "$SRC"/pytest-report-*.md; do
-            if [ -f "$md_file" ]; then
-              cp "$md_file" "$STATIC_DIR/"
+            echo "  Found: $md_file"
+            if cp "$md_file" "$STATIC_DIR/"; then
+              echo "  Copied -> $STATIC_DIR/$(basename "$md_file")"
+              count=$((count+1))
+            else
+              echo "  ERROR: Failed to copy $md_file"
             fi
           done
       
