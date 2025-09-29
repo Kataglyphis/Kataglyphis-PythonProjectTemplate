@@ -46,6 +46,7 @@ test = [
     "memory-profiler",  # memory profiling
     "py-spy",           # profiling
     "pytest-cov",
+    "pytest-html",
     "codespell",
     "mypy",             # type checking
     "bandit",           # find security vulnerabilities
