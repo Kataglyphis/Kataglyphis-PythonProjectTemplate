@@ -48,11 +48,11 @@ The test reports include:
    :maxdepth: 2
    :caption: Contents
 
-   modules
-   test_results/pytest-report-3.10
-   test_results/pytest-report-3.11
-   test_results/pytest-report-3.12
-   test_results/pytest-report-3.13
+Test Results
+============
+
+.. include:: _static/pytest-report-3.13.md
+   :parser: myst_parser.sphinx_
 
 Indices and tables
 ==================
