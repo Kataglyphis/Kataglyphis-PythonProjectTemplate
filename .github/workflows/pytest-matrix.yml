@@ -39,6 +39,18 @@ jobs:
           python -m pip install --upgrade pip
           pip install -e .[test]
 
+      # ensure docs/test_results exists (Linux / macOS)
+      - name: Ensure test results dir
+        if: ${{ inputs.runner != 'windows-2025' }}
+        run: mkdir -p docs/test_results
+
+      # ensure docs/test_results exists (Windows pwsh)
+      - name: Ensure test results dir (Windows)
+        if: ${{ inputs.runner == 'windows-2025' }}
+        shell: pwsh
+        run: |
+          New-Item -ItemType Directory -Force docs/test_results | Out-Null
+      
       - name: Run tests (Windows pwsh)
         if: ${{ inputs.runner == 'windows-2025' }}
         shell: pwsh
