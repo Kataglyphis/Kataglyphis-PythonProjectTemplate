@@ -50,7 +50,7 @@ Test Reports
 .. toctree::
    :maxdepth: 1
 
-   _static/pytest-report-3.10.md
+   _static/test_results/pytest-report-3.10.md
    _static/pytest-report-3.11.md
    _static/pytest-report-3.12.md
    _static/pytest-report-3.13.md
