@@ -47,7 +47,44 @@ jobs:
         run: |
           cp README.md docs/source/README.md
           cp CHANGELOG.md docs/source/CHANGELOG.md
+     
+      - name: Move test reports into Sphinx _static
+        run: |
+          set -e
+          # where your artifact was downloaded
+          SRC=docs/test_results
 
+          # Sphinx source _static (adjust if your source dir is docs/sources)
+          STATIC_DIR=docs/source/_static
+          COVERAGE_DST=$STATIC_DIR/coverage
+
+          mkdir -p "$COVERAGE_DST"
+
+          echo "Looking for coverage HTML in $SRC ..."
+          # common coverage layouts — adjust if your artifact structure differs:
+          if [ -d "$SRC/coverage" ]; then
+            cp -r "$SRC/coverage/." "$COVERAGE_DST/"
+            echo "Copied $SRC/coverage -> $COVERAGE_DST/"
+          elif [ -d "$SRC/htmlcov" ]; then
+            cp -r "$SRC/htmlcov/." "$COVERAGE_DST/"
+            echo "Copied $SRC/htmlcov -> $COVERAGE_DST/"
+          else
+            # try to find any index.html under SRC
+            found=$(find "$SRC" -maxdepth 3 -type f -name index.html | head -n1 || true)
+            if [ -n "$found" ]; then
+              base=$(dirname "$found")
+              cp -r "$base/." "$COVERAGE_DST/"
+              echo "Copied discovered coverage HTML from $base -> $COVERAGE_DST/"
+            else
+              echo "No coverage HTML folder found in $SRC (checked coverage/ and htmlcov/)."
+            fi
+          fi
+
+          # copy XML coverage if present and your index.rst links it
+          if [ -f "$SRC/coverage.xml" ]; then
+            cp "$SRC/coverage.xml" "$STATIC_DIR/coverage.xml"
+            echo "Copied coverage.xml -> $STATIC_DIR/coverage.xml"
+          fi
       
       - name: Build web page
         run: |
