@@ -48,7 +48,9 @@ jobs:
           --cov-report=term-missing `
           --cov-report=html:docs/test_results/coverage-html-3.10 `
           --cov-report=xml:docs/test_results/coverage-3.10.xml `
-          --junitxml=docs/test_results/report-3.10.xml
+          --junitxml=docs/test_results/report-3.10.xml `
+          --html=docs/test_results/pytest-report-${{ matrix.python-version }}.html `
+          --self-contained-html
           python bench/demo_cprofile.py
           python bench/demo_line_profiler.py
           python -m memory_profiler bench/demo_memory_profiling.py
@@ -63,7 +65,9 @@ jobs:
             --cov-report=term-missing \
             --cov-report=html:docs/test_results/coverage-html-${{ matrix.python-version }} \
             --cov-report=xml:docs/test_results/coverage-${{ matrix.python-version }}.xml \
-            --junitxml=docs/test_results/report-${{ matrix.python-version }}.xml
+            --junitxml=docs/test_results/report-${{ matrix.python-version }}.xml \
+            --html=docs/test_results/pytest-report-${{ matrix.python-version }}.html \
+            --self-contained-html
           python bench/demo_cprofile.py
           python bench/demo_cprofile.py
           python bench/demo_line_profiler.py
