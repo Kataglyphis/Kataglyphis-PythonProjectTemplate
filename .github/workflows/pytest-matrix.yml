@@ -63,7 +63,9 @@ jobs:
           --junitxml=docs/test_results/report-3.10.xml `
           --html=docs/test_results/pytest-report-${{ matrix.python-version }}.html `
           --self-contained-html `
-          --md-report  docs/test_results/pytest-report-${{ matrix.python-version }}.md
+          --md-report `
+          --md-report-flavor gfm --md-report-exclude-outcomes passed skipped xpassed `
+          --md-report docs/test_results/pytest-report-${{ matrix.python-version }}.md
           python bench/demo_cprofile.py
           python bench/demo_line_profiler.py
           python -m memory_profiler bench/demo_memory_profiling.py
@@ -81,6 +83,8 @@ jobs:
             --junitxml=docs/test_results/report-${{ matrix.python-version }}.xml \
             --html=docs/test_results/pytest-report-${{ matrix.python-version }}.html \
             --self-contained-html \
+            --md-report \
+            --md-report-flavor gfm --md-report-exclude-outcomes passed skipped xpassed \
             --md-report docs/test_results/pytest-report-${{ matrix.python-version }}.md
           python bench/demo_cprofile.py
           python bench/demo_cprofile.py
