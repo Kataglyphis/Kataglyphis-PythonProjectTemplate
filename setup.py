@@ -90,7 +90,7 @@ if CYTHONIZE:
 
     extensions = [
         Extension(
-            py_file.replace(os.path.sep, ".")[:-3] + "_compiled",
+            py_file.replace(os.path.sep, ".")[:-3], # + "_compiled",
             [py_file],
             extra_compile_args=extra_compile_args,
             extra_link_args=extra_link_args,
