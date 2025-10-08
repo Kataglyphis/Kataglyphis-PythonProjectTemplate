@@ -19,7 +19,9 @@ jobs:
           fetch-depth: 0
           submodules: recursive
 
-      - name: Install system dependencies
+      hatGPT
+Du:
+- name: Install system dependencies
         run: |
           chmod +x scripts/linux/setup-dependencies.sh
           ./scripts/linux/setup-dependencies.sh
@@ -31,7 +33,7 @@ jobs:
           python-version: 3.13t
           enable-cache: true
 
-      # Optional: install Python pinned by project if you want: `uv python install`
+      # Optional: install Python pinned by project if you want: uv python install
       - name: Install project dependencies with uv (use lock if present)
         run: |
           if [ -f uv.lock ]; then
@@ -41,6 +43,80 @@ jobs:
             echo "No uv.lock found — performing non-locked sync"
             uv sync --dev --all-extras
           fi
+
+This should run if inputs.runner is linux system. Adjust it for a Windows system.
+In Windows it should run ./scripts/windows/install-dependencies.ps1
+ChatGPT:
+
+Nachgedacht für 37s
+Nice — here's a clean, drop-in adjustment that runs the Linux steps when inputs.runner is a Linux runner and the Windows steps when it's a Windows runner. It uses contains(toLower(...), 'windows') to detect Windows (so it works for windows-latest, Windows Server 2022, self-hosted names that contain windows, etc.).
+
+jobs:
+  python-tests:
+    name: Pytest Matrix
+    runs-on: ${{ inputs.runner }}
+    strategy:
+      fail-fast: false
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+
+      # -------------------------
+      # Install system dependencies
+      # -------------------------
+      - name: Install system dependencies (Linux)
+        if: contains(toLower(inputs.runner), 'ubuntu')
+        run: |
+          chmod +x scripts/linux/setup-dependencies.sh
+          ./scripts/linux/setup-dependencies.sh
+          echo "/usr/bin" >> $GITHUB_PATH
+        shell: bash
+
+      - name: Install system dependencies (Windows)
+        if: contains(toLower(inputs.runner), 'windows')
+        run: |
+          # run the PowerShell install script on Windows
+          pwsh -NoProfile -ExecutionPolicy Bypass -File ./scripts/windows/install-dependencies.ps1
+        shell: pwsh
+
+      # -------------------------
+      # Install uv (Astral) - runs on both OSes
+      # -------------------------
+      - name: Install uv (Astral)
+        uses: astral-sh/setup-uv@v7.0.0
+        with:
+          python-version: 3.13t
+          enable-cache: true
+
+      # -------------------------
+      # Install project dependencies with uv
+      # -------------------------
+      - name: Install project dependencies with uv (Linux)
+        if: contains(toLower(inputs.runner), 'ubuntu')
+        run: |
+          if [ -f uv.lock ]; then
+            echo "uv.lock found — using locked sync"
+            uv sync --locked --dev --all-extras
+          else
+            echo "No uv.lock found — performing non-locked sync"
+            uv sync --dev --all-extras
+          fi
+        shell: bash
+
+      - name: Install project dependencies with uv (Windows)
+        if: contains(toLower(inputs.runner), 'windows')
+        run: |
+          if (Test-Path -Path 'uv.lock') {
+            Write-Host "uv.lock found — using locked sync"
+            uv sync --locked --dev --all-extras
+          } else {
+            Write-Host "No uv.lock found — performing non-locked sync"
+            uv sync --dev --all-extras
+          }
+        shell: pwsh
 
       - name: Copy Manifest
         run: cp resources/packaging/source/MANIFEST.in MANIFEST.in
