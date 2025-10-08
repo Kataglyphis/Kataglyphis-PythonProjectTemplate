@@ -41,14 +41,14 @@ jobs:
           python-version: ${{ matrix.python-version }}
           enable-cache: true
 
-      # Optional: install Python pinned by project if y>
-      - name: Install project dependencies with uv (use>
+      # Optional: install Python pinned by project if you want: `uv python install`
+      - name: Install project dependencies with uv (use lock if present)
         run: |
           if [ -f uv.lock ]; then
             echo "uv.lock found — using locked sync"
             uv sync --locked --dev --all-extras
           else
-            echo "No uv.lock found — performing non-loc>
+            echo "No uv.lock found — performing non-locked sync"
             uv sync --dev --all-extras
           fi
 
