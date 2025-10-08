@@ -34,7 +34,7 @@ jobs:
         if: contains(inputs.runner, 'windows')
         run: |
           # run the PowerShell install script on Windows
-          pwsh -NoProfile -ExecutionPolicy Bypass -File ./scripts/windows/install-dependencies.ps1
+          pwsh -NoProfile -ExecutionPolicy Bypass -File ./scripts/windows/setup-dependencies.ps1
         shell: pwsh
 
       - name: Install uv (Astral)
