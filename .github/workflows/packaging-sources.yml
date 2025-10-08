@@ -46,7 +46,7 @@ jobs:
         run: cp resources/packaging/source/MANIFEST.in MANIFEST.in
 
       - name: Build source distribution
-        run: uv run -m build
+        run: uv build
 
       - name: Store distribution artifact
         uses: actions/upload-artifact@v4.6.2
