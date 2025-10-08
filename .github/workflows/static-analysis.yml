@@ -23,8 +23,9 @@ jobs:
           echo "/usr/bin" >> $GITHUB_PATH
 
       - name: Install uv (Astral)
-        uses: astral-sh/setup-uv@v6
+        uses: astral-sh/setup-uv@v7.0.0
         with:
+          python-version: 3.13t
           enable-cache: true
 
       # Optional: install Python pinned by project if you want: `uv python install`

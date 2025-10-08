@@ -29,15 +29,28 @@ jobs:
           fetch-depth: 0
           submodules: recursive
 
-      - name: Set up Python
-        uses: actions/setup-python@v6.0.0
+      - name: Install system dependencies
+        run: |
+          chmod +x scripts/linux/setup-dependencies.sh
+          ./scripts/linux/setup-dependencies.sh
+          echo "/usr/bin" >> $GITHUB_PATH
+
+      - name: Install uv (Astral)
+        uses: astral-sh/setup-uv@v7.0.0
         with:
           python-version: ${{ matrix.python-version }}
+          enable-cache: true
 
-      - name: Prepare environment
+      # Optional: install Python pinned by project if y>
+      - name: Install project dependencies with uv (use>
         run: |
-          python -m pip install --upgrade pip
-          pip install -e .[test]
+          if [ -f uv.lock ]; then
+            echo "uv.lock found — using locked sync"
+            uv sync --locked --dev --all-extras
+          else
+            echo "No uv.lock found — performing non-loc>
+            uv sync --dev --all-extras
+          fi
 
       # ensure docs/test_results exists (Linux / macOS)
       - name: Ensure test results dir
@@ -50,12 +63,12 @@ jobs:
         shell: pwsh
         run: |
           New-Item -ItemType Directory -Force docs/test_results | Out-Null
-      
+
       - name: Run tests (Windows pwsh)
         if: ${{ inputs.runner == 'windows-2025' }}
         shell: pwsh
         run: |
-          pytest tests/unit -v `
+          uv run pytest tests/unit -v `
           --cov=kataglyphispythonpackage `
           --cov-report=term-missing `
           --cov-report=html:docs/test_results/coverage-html-3.10 `
@@ -66,16 +79,16 @@ jobs:
           --md-report `
           --md-report-verbose=1 `
           --md-report-output docs/test_results/pytest-report-${{ matrix.python-version }}.md
-          python bench/demo_cprofile.py
-          python bench/demo_line_profiler.py
-          python -m memory_profiler bench/demo_memory_profiling.py
-          py-spy record --rate 200 --duration 45 -o profile.svg -- python bench/demo_py_spy.py
-          pytest bench/demo_pytest_benchmark.py
-  
+          uv run python bench/demo_cprofile.py
+          uv run python bench/demo_line_profiler.py
+          uv run -m memory_profiler bench/demo_memory_profiling.py
+          uv run py-spy record --rate 200 --duration 45 -o profile.svg -- python bench/demo_py_spy.py
+          uv run pytest bench/demo_pytest_benchmark.py
+
       - name: Run tests
         if: ${{ inputs.runner != 'windows-2025' }}
         run: |
-          pytest tests/unit -v \
+          uv run pytest tests/unit -v \
             --cov=${{ inputs.packagename }} \
             --cov-report=term-missing \
             --cov-report=html:docs/test_results/coverage-html-${{ matrix.python-version }} \
@@ -86,11 +99,11 @@ jobs:
             --md-report \
             --md-report-verbose=1  \
             --md-report-output docs/test_results/pytest-report-${{ matrix.python-version }}.md
-          python bench/demo_cprofile.py
-          python bench/demo_line_profiler.py
-          python -m memory_profiler bench/demo_memory_profiling.py
-          py-spy record --rate 200 --duration 45 -o profile.svg -- python bench/demo_py_spy.py
-          pytest bench/demo_pytest_benchmark.py
+          uv run python bench/demo_cprofile.py
+          uv run python bench/demo_line_profiler.py
+          uv run -m memory_profiler bench/demo_memory_profiling.py
+          uv run py-spy record --rate 200 --duration 45 -o profile.svg -- python bench/demo_py_spy.py
+          uv run pytest bench/demo_pytest_benchmark.py
 
       - name: Upload test results
         if: always()

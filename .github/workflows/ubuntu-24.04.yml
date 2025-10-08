@@ -19,7 +19,7 @@ jobs:
       runner: ubuntu-24.04
       python-versions: '["3.8", "3.9", "3.10", "3.11", "3.12", "3.13", "3.14"]'
       packagename: "kataglyphispythonpackage"
-  
+
   build-docs:
     needs: pytest-matrix
     uses: ./.github/workflows/build-docs.yml
@@ -29,7 +29,7 @@ jobs:
       SERVER: ${{ secrets.SERVER }}
       USERNAME: ${{ secrets.USERNAME }}
       PW: ${{ secrets.PW }}
-      
+
   packaging-sources:
     uses: ./.github/workflows/packaging-sources.yml
     with:
