@@ -45,11 +45,11 @@ jobs:
           CYTHONIZE: "True" 
         run: |
           # run the build *inside* the uv environment so packages are consistent
-          uv run python -m pip install --upgrade pip setuptools wheel build cython auditwheel
+          uv run -m pip install --upgrade pip setuptools wheel build cython auditwheel
           # build in-place C extensions if your setup.py expects it
           uv run python setup.py build_ext --inplace
           # build wheel(s)
-          uv run python -m build -w --no-isolation
+          uv run -m build -w --no-isolation
           # repair wheels to proper manylinux tags and put repaired wheels into dist/
           mkdir -p dist/repaired
           for whl in dist/*.whl; do
