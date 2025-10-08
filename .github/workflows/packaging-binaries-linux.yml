@@ -62,9 +62,9 @@ jobs:
           PYTHON_ABI="cp${PYTHON_VERSION_SHORT}"
           PLATFORM="manylinux1_${WHEEL_ARCH}"
           TAG="${PYTHON_ABI}-${PYTHON_ABI}-${PLATFORM}"
-          for f in dist/*.whl; do
-            mv "$f" "$(echo $f | sed "s/py3-none-any/$TAG/")"
-          done
+          #for f in dist/*.whl; do
+          #  mv "$f" "$(echo $f | sed "s/py3-none-any/$TAG/")"
+          #done
 
       - name: Store distribution artifact
         uses: actions/upload-artifact@v4.6.2
