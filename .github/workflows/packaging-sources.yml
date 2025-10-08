@@ -19,9 +19,7 @@ jobs:
           fetch-depth: 0
           submodules: recursive
 
-      hatGPT
-Du:
-- name: Install system dependencies
+      - name: Install system dependencies
         run: |
           chmod +x scripts/linux/setup-dependencies.sh
           ./scripts/linux/setup-dependencies.sh
