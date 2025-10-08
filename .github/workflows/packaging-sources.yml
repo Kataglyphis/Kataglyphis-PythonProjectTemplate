@@ -23,7 +23,7 @@ jobs:
       # Install system dependencies
       # -------------------------
       - name: Install system dependencies (Linux)
-        if: contains(toLower(inputs.runner), 'linux')
+        if: contains(inputs.runner, 'ubuntu')
         run: |
           chmod +x scripts/linux/setup-dependencies.sh
           ./scripts/linux/setup-dependencies.sh
@@ -31,7 +31,7 @@ jobs:
         shell: bash
 
       - name: Install system dependencies (Windows)
-        if: contains(toLower(inputs.runner), 'windows')
+        if: contains(inputs.runner, 'windows')
         run: |
           # run the PowerShell install script on Windows
           pwsh -NoProfile -ExecutionPolicy Bypass -File ./scripts/windows/install-dependencies.ps1
