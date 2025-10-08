@@ -17,15 +17,28 @@ jobs:
           fetch-depth: 0
           submodules: recursive
 
-      - name: Set up Python 3.13
-        uses: actions/setup-python@v6.0.0
-        with:
-          python-version: "3.13"
-      
-      - name: Prepare environment
+      - name: Install system dependencies
         run: |
-          python3 -m pip install --upgrade pip
-          pip install -e .[test]
+          chmod +x scripts/linux/setup-dependencies.sh
+          ./scripts/linux/setup-dependencies.sh
+          echo "/usr/bin" >> $GITHUB_PATH
+
+      - name: Install uv (Astral)
+        uses: astral-sh/setup-uv@v7.0.0
+        with:
+          python-version: 3.13t
+          enable-cache: true
+
+      # Optional: install Python pinned by project if you want: `uv python install`
+      - name: Install project dependencies with uv (use lock if present)
+        run: |
+          if [ -f uv.lock ]; then
+            echo "uv.lock found — using locked sync"
+            uv sync --locked --dev --all-extras
+          else
+            echo "No uv.lock found — performing non-locked sync"
+            uv sync --dev --all-extras
+          fi
 
       - name: Build and rename Linux wheels
         run: |
