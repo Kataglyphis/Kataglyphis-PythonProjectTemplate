@@ -63,10 +63,6 @@ docs = [
   "myst-parser"
 ]
 
-fuzzytests = [
-    "atheris", # Fuzz testing
-]
-
 [project.urls]
 Homepage = "https://github.com/Kataglyphis/Kataglyphis-PythonProjectTemplate"
 
