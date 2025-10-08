@@ -47,7 +47,7 @@ jobs:
       # Install project dependencies with uv
       # -------------------------
       - name: Install project dependencies with uv (Linux)
-        if: contains(toLower(inputs.runner), 'ubuntu')
+        if: contains(inputs.runner, 'ubuntu')
         run: |
           if [ -f uv.lock ]; then
             echo "uv.lock found — using locked sync"
@@ -59,7 +59,7 @@ jobs:
         shell: bash
 
       - name: Install project dependencies with uv (Windows)
-        if: contains(toLower(inputs.runner), 'windows')
+        if: contains(inputs.runner, 'windows')
         run: |
           if (Test-Path -Path 'uv.lock') {
             Write-Host "uv.lock found — using locked sync"
