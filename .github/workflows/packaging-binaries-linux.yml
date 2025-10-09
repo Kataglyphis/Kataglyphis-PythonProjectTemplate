@@ -45,11 +45,12 @@ jobs:
           CYTHONIZE: "True"
         run: |
           export CYTHONIZE="True"
-          pip install --upgrade setuptools wheel cython build twine auditwheel
-          python3 setup.py build_ext --inplace
-          python3 setup.py bdist_wheel -d dist
+          uv pip install --upgrade setuptools wheel cython build twine auditwheel
+          uv build
+          # python3 setup.py build_ext --inplace
+          # python3 setup.py bdist_wheel -d dist
           # repair wheel to manylinux (auditwheel will create a new wheel with proper tags)
-          auditwheel repair dist/*.whl -w dist/
+          uv run auditwheel repair dist/*.whl -w dist/
 
       - name: Store distribution artifact
         uses: actions/upload-artifact@v4.6.2
