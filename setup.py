@@ -4,7 +4,7 @@ import sys
 from pathlib import Path
 from setuptools import setup, Extension
 from setuptools.command.build_ext import build_ext
-# --- add near the bottom of your setup.py (before setup(**setup_kwargs)) ---
+
 import zipfile
 import hashlib
 import base64
