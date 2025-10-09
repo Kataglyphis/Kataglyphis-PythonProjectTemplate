@@ -74,18 +74,13 @@ jobs:
           $ErrorActionPreference = 'Stop'
 
           Write-Host "=== Build: install build dependencies ==="
-          pip install --upgrade setuptools wheel cython build twine auditwheel
+          pip install --upgrade setuptools wheel cython build twine
 
           Write-Host "=== Build: python3 setup.py build_ext --inplace ==="
           python3 setup.py build_ext --inplace
 
           # build wheel into dist/
           python3 setup.py bdist_wheel -d dist
-
-          # repair every wheel found in dist (works in PowerShell)
-          Get-ChildItem -Path dist -Filter '*.whl' | ForEach-Object {
-              & auditwheel repair $_.FullName -w dist
-          }
 
           Write-Host "=== Build finished ==="
 
