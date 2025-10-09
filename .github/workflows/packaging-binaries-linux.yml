@@ -46,15 +46,15 @@ jobs:
         run: |
           ARCH="$(uname -m)"
           # normalize common uname arch names to wheel platform tokens
-          case "$ARCH" in
-            x86_64) WHEEL_ARCH="x86_64" ;;
-            i386|i686) WHEEL_ARCH="i686" ;;
-            aarch64|arm64) WHEEL_ARCH="aarch64" ;;
-            armv7l) WHEEL_ARCH="armv7l" ;;
-            *) WHEEL_ARCH="$ARCH" ;;
-          esac
+          #case "$ARCH" in
+          #  x86_64) WHEEL_ARCH="x86_64" ;;
+          #  i386|i686) WHEEL_ARCH="i686" ;;
+          #  aarch64|arm64) WHEEL_ARCH="aarch64" ;;
+          #  armv7l) WHEEL_ARCH="armv7l" ;;
+          #  *) WHEEL_ARCH="$ARCH" ;;
+          #esac
           export CYTHONIZE="True"
-          cp resources/packaging/binary/MANIFEST.in MANIFEST.in
+          #cp resources/packaging/binary/MANIFEST.in MANIFEST.in
           pip install --upgrade setuptools wheel cython build twine auditwheel
           python3 setup.py build_ext --inplace
           # delete .py files inside your package (replace mypkg with your package dir)
