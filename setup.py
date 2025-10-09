@@ -101,6 +101,10 @@ if CYTHONIZE:
 setup_kwargs = {"name": package_dir, "version": version, "zip_safe": False}
 
 if CYTHONIZE:
+    # merge cmdclass
+    cmds = {"build_ext": ClangBuildExt}
+    if _bdist_wheel is not None:
+        cmds["bdist_wheel"] = StripWheel
     setup_kwargs.update(
         {
             "ext_modules": cythonize(
@@ -118,11 +122,93 @@ if CYTHONIZE:
                     "infer_types": False,
                 },
             ),
-            "cmdclass": {"build_ext": ClangBuildExt},
+            "cmdclass": cmds, # {"build_ext": ClangBuildExt},
             "package_data": {"": ["*.c", "*.so", "*.pyd"]},
         }
     )
 else:
     setup_kwargs.update({"packages": [package_dir], "include_package_data": True})
+# --- add near the bottom of your setup.py (before setup(**setup_kwargs)) ---
+
+import zipfile
+import hashlib
+import base64
+import tempfile
+import shutil
+
+try:
+    from wheel.bdist_wheel import bdist_wheel as _bdist_wheel
+except Exception:
+    _bdist_wheel = None
+
+class StripWheel(_bdist_wheel if _bdist_wheel is not None else object):
+    """
+    Build the wheel then rewrite it to exclude source files (.py, .pyc, .c, etc.)
+    and rebuild the .dist-info/RECORD so the wheel remains valid.
+    """
+    exclude_suffixes = (".py", ".pyc", ".pyo", ".c", ".h", ".pxd")
+
+    def run(self):
+        # Run the normal wheel build if available
+        if _bdist_wheel is not None:
+            super().run()
+        else:
+            # fallback: let setuptools create dist/ wheel via other commands
+            raise RuntimeError("wheel bdist_wheel not available; install 'wheel' package")
+
+        dist_dir = getattr(self, "dist_dir", "dist")
+        # find the newly created wheel(s)
+        for fname in os.listdir(dist_dir):
+            if not fname.endswith(".whl"):
+                continue
+            path = os.path.join(dist_dir, fname)
+            self._strip_wheel(path)
+
+    def _strip_wheel(self, wheel_path):
+        # read original wheel and write new temporary wheel
+        tmpfd, tmpname = tempfile.mkstemp(suffix=".whl")
+        os.close(tmpfd)
+
+        with zipfile.ZipFile(wheel_path, "r") as zin:
+            namelist = zin.namelist()
+            # find dist-info directory name (e.g. mypkg-1.0.dist-info/RECORD)
+            dist_info_record = next((n for n in namelist if n.endswith(".dist-info/RECORD")), None)
+            if dist_info_record is None:
+                raise RuntimeError("Could not locate .dist-info/RECORD inside wheel")
+
+            dist_info_dir = dist_info_record.rsplit("/", 1)[0] + "/"
+
+            # Collect files we will keep and compute their hashes & sizes
+            kept = []
+            for name in namelist:
+                if any(name.endswith(suf) for suf in self.exclude_suffixes):
+                    # drop excluded suffixes
+                    continue
+                # also skip RECORD itself — we'll regenerate it
+                if name == dist_info_record:
+                    continue
+                # keep everything else
+                kept.append(name)
+
+            # Write kept files into new wheel and compute RECORD entries
+            record_lines = []
+            with zipfile.ZipFile(tmpname, "w", compression=zipfile.ZIP_DEFLATED) as zout:
+                for name in kept:
+                    data = zin.read(name)
+                    zout.writestr(name, data)
+                    # compute sha256 base64 (urlsafe, no padding)
+                    h = hashlib.sha256(data).digest()
+                    b64 = base64.urlsafe_b64encode(h).rstrip(b"=").decode("ascii")
+                    size = str(len(data))
+                    record_lines.append(f"{name},sha256={b64},{size}")
+
+                # Add the new RECORD file with entries computed above.
+                # RECORD itself has an empty hash and size.
+                record_content = "\n".join(record_lines + [f"{dist_info_dir}RECORD,,"]).encode("utf-8")
+                zout.writestr(dist_info_dir + "RECORD", record_content)
+
+        # replace original wheel with the stripped one
+        shutil.move(tmpname, wheel_path)
+        print(f"Stripped wheel written: {wheel_path}")
 
 setup(**setup_kwargs)
