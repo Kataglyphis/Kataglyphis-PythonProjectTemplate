@@ -181,7 +181,7 @@ if CYTHONIZE:
 setup_kwargs = {"name": package_dir, "version": version, "zip_safe": False}
 
 if CYTHONIZE:
-    # merge cmdclass
+    # merge cmdclasses
     cmds = {"build_ext": ClangBuildExt}
     if _bdist_wheel is not None:
         cmds["bdist_wheel"] = StripWheel
