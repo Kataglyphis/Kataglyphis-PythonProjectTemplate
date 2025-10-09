@@ -44,34 +44,12 @@ jobs:
         env:
           CYTHONIZE: "True"
         run: |
-          ARCH="$(uname -m)"
-          # normalize common uname arch names to wheel platform tokens
-          #case "$ARCH" in
-          #  x86_64) WHEEL_ARCH="x86_64" ;;
-          #  i386|i686) WHEEL_ARCH="i686" ;;
-          #  aarch64|arm64) WHEEL_ARCH="aarch64" ;;
-          #  armv7l) WHEEL_ARCH="armv7l" ;;
-          #  *) WHEEL_ARCH="$ARCH" ;;
-          #esac
           export CYTHONIZE="True"
-          #cp resources/packaging/binary/MANIFEST.in MANIFEST.in
           pip install --upgrade setuptools wheel cython build twine auditwheel
           python3 setup.py build_ext --inplace
-          # delete .py files inside your package (replace mypkg with your package dir)
-          # find kataglyphispythonpackage -type f -name '*.py' -print -delete
-          # python3 setup.py bdist_wheel
-          # create a wheel using setup.py so custom bdist_wheel (StripWheel) runs if installed
           python3 setup.py bdist_wheel -d dist
           # repair wheel to manylinux (auditwheel will create a new wheel with proper tags)
           auditwheel repair dist/*.whl -w dist/
-          # python3 -m build # --no-isolation
-          #PYTHON_VERSION_SHORT=$(python3 -c 'import sys; print(f"{sys.version_info[0]}{sys.version_info[1]}")')
-          #PYTHON_ABI="cp${PYTHON_VERSION_SHORT}"
-          #PLATFORM="manylinux1_${WHEEL_ARCH}"
-          #TAG="${PYTHON_ABI}-${PYTHON_ABI}-${PLATFORM}"
-          #for f in dist/*.whl; do
-          #  mv "$f" "$(echo $f | sed "s/py3-none-any/$TAG/")"
-          #done
 
       - name: Store distribution artifact
         uses: actions/upload-artifact@v4.6.2
