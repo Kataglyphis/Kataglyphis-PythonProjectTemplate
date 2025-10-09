@@ -22,15 +22,14 @@ CYTHONIZE = str(CYTHONIZE_RAW).strip().lower() in ("1", "true", "yes", "on")
 if CYTHONIZE:
     from Cython.Build import cythonize
 
-# Compiler-Umgebung nur plattformabhängig setzen
+# Compiler-Env will be set based on OS
 if sys.platform == "win32":
     os.environ["CC"] = "clang-cl"
     os.environ["CXX"] = "clang-cl"
     os.environ["DISTUTILS_USE_SDK"] = "1"
 else:
-    # Auf Unix NICHT clang-cl erzwingen
     os.environ.pop("DISTUTILS_USE_SDK", None)
-    # Optional: clang bevorzugen, falls nicht explizit gesetzt
+    # I really like clang
     os.environ.setdefault("CC", "clang")
     os.environ.setdefault("CXX", "clang")
 
@@ -39,7 +38,6 @@ class StripWheel(_bdist_wheel if _bdist_wheel is not None else object):
     Build the wheel then rewrite it to exclude source files (.py, .pyc, .c, etc.)
     and rebuild the .dist-info/RECORD so the wheel remains valid.
 
-    Key fixes compared to the previous implementation:
     - Use ZipInfo objects and preserve file metadata where possible.
     - Skip directory entries and signature files (RECORD.jws, .asc, .sig, .jws)
     - Correctly compute sha256 and sizes for binary files and write a valid RECORD
@@ -151,7 +149,9 @@ class StripWheel(_bdist_wheel if _bdist_wheel is not None else object):
 
 
 class ClangBuildExt(build_ext):
-    """Nur unter MSVC den Compiler/Linker auf clang-cl/lld-link umbiegen"""
+    """ Under windows i bend the compiler to be clang-cl!!!
+        Open source >>> closed source 
+    """
 
     def build_extension(self, ext):
         if self.compiler.compiler_type == "msvc":
