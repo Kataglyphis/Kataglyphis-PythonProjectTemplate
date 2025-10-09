@@ -38,8 +38,15 @@ class StripWheel(_bdist_wheel if _bdist_wheel is not None else object):
     """
     Build the wheel then rewrite it to exclude source files (.py, .pyc, .c, etc.)
     and rebuild the .dist-info/RECORD so the wheel remains valid.
+
+    Key fixes compared to the previous implementation:
+    - Use ZipInfo objects and preserve file metadata where possible.
+    - Skip directory entries and signature files (RECORD.jws, .asc, .sig, .jws)
+    - Correctly compute sha256 and sizes for binary files and write a valid RECORD
+    - Avoid writing RECORD into itself when computing hashes
+    - Replace the original wheel atomically
     """
-    exclude_suffixes = (".py", ".pyc", ".pyo", ".c", ".h", ".pxd")
+    exclude_suffixes = (".py", ".pyc", ".pyo", ".c", ".h", ".pxd", ".pyi")
 
     def run(self):
         # Run the normal wheel build if available
@@ -58,51 +65,89 @@ class StripWheel(_bdist_wheel if _bdist_wheel is not None else object):
             self._strip_wheel(path)
 
     def _strip_wheel(self, wheel_path):
-        # read original wheel and write new temporary wheel
-        tmpfd, tmpname = tempfile.mkstemp(suffix=".whl")
+        dirname = os.path.dirname(wheel_path) or "."
+        tmpfd, tmpname = tempfile.mkstemp(suffix=".whl", dir=dirname)
         os.close(tmpfd)
 
-        with zipfile.ZipFile(wheel_path, "r") as zin:
-            namelist = zin.namelist()
-            # find dist-info directory name (e.g. mypkg-1.0.dist-info/RECORD)
-            dist_info_record = next((n for n in namelist if n.endswith(".dist-info/RECORD")), None)
-            if dist_info_record is None:
-                raise RuntimeError("Could not locate .dist-info/RECORD inside wheel")
+        try:
+            with zipfile.ZipFile(wheel_path, "r") as zin:
+                zin_infos = zin.infolist()
 
-            dist_info_dir = dist_info_record.rsplit("/", 1)[0] + "/"
+                # locate the dist-info RECORD path
+                dist_info_record = next((zi.filename for zi in zin_infos if zi.filename.endswith('.dist-info/RECORD')), None)
+                if dist_info_record is None:
+                    # try to find dist-info directory if RECORD missing (very unlikely)
+                    dist_info_dir = next((zi.filename for zi in zin_infos if zi.filename.endswith('.dist-info/')), None)
+                    if dist_info_dir is None:
+                        raise RuntimeError("Could not locate .dist-info directory inside wheel")
+                    else:
+                        dist_info_record = dist_info_dir + 'RECORD'
+                else:
+                    dist_info_dir = dist_info_record.rsplit('/', 1)[0] + '/'
 
-            # Collect files we will keep and compute their hashes & sizes
-            kept = []
-            for name in namelist:
-                if any(name.endswith(suf) for suf in self.exclude_suffixes):
-                    # drop excluded suffixes
-                    continue
-                # also skip RECORD itself — we'll regenerate it
-                if name == dist_info_record:
-                    continue
-                # keep everything else
-                kept.append(name)
+                kept_infos = []  # list of (ZipInfo, data)
+
+                # Determine which files to keep
+                for zi in zin_infos:
+                    name = zi.filename
+                    # skip directory entries
+                    if name.endswith('/'):
+                        continue
+                    # skip the original RECORD (we regenerate it)
+                    if name == dist_info_record:
+                        continue
+                    # skip signature files under dist-info (they would be invalid after we modify RECORD)
+                    if name.startswith(dist_info_dir) and name.lower().endswith(('.jws', '.asc', '.sig')):
+                        # skip signatures
+                        continue
+                    # skip excluded suffixes
+                    if any(name.endswith(suf) for suf in self.exclude_suffixes):
+                        continue
+                    # keep everything else
+                    data = zin.read(name)
+                    kept_infos.append((zi, data))
 
             # Write kept files into new wheel and compute RECORD entries
             record_lines = []
             with zipfile.ZipFile(tmpname, "w", compression=zipfile.ZIP_DEFLATED) as zout:
-                for name in kept:
-                    data = zin.read(name)
-                    zout.writestr(name, data)
-                    # compute sha256 base64 (urlsafe, no padding)
+                for zi, data in kept_infos:
+                    # preserve original ZipInfo metadata where possible
+                    new_zi = zipfile.ZipInfo(filename=zi.filename)
+                    # copy date_time and external_attr to preserve timestamps and permissions
+                    new_zi.date_time = zi.date_time
+                    new_zi.external_attr = zi.external_attr
+                    new_zi.compress_type = zipfile.ZIP_DEFLATED
+
+                    # write entry
+                    zout.writestr(new_zi, data)
+
+                    # compute hash and size for RECORD
                     h = hashlib.sha256(data).digest()
                     b64 = base64.urlsafe_b64encode(h).rstrip(b"=").decode("ascii")
                     size = str(len(data))
-                    record_lines.append(f"{name},sha256={b64},{size}")
+                    record_lines.append(f"{zi.filename},sha256={b64},{size}")
 
                 # Add the new RECORD file with entries computed above.
                 # RECORD itself has an empty hash and size.
                 record_content = "\n".join(record_lines + [f"{dist_info_dir}RECORD,,"]).encode("utf-8")
-                zout.writestr(dist_info_dir + "RECORD", record_content)
 
-        # replace original wheel with the stripped one
-        shutil.move(tmpname, wheel_path)
-        print(f"Stripped wheel written: {wheel_path}")
+                # create ZipInfo for RECORD and set reasonable permissions
+                record_zi = zipfile.ZipInfo(filename=dist_info_dir + "RECORD")
+                record_zi.date_time = (1980, 1, 1, 0, 0, 0)
+                # set rw-r--r-- permissions
+                record_zi.external_attr = (0o644 & 0xFFFF) << 16
+                zout.writestr(record_zi, record_content)
+
+            # replace original wheel with the stripped one
+            shutil.move(tmpname, wheel_path)
+            print(f"Stripped wheel written: {wheel_path}")
+        finally:
+            # cleanup tmp file if it still exists
+            try:
+                if os.path.exists(tmpname):
+                    os.remove(tmpname)
+            except Exception:
+                pass
 
 
 class ClangBuildExt(build_ext):
