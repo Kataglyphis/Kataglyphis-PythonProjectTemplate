@@ -58,7 +58,7 @@ jobs:
           pip install --upgrade setuptools wheel cython build twine
           python3 setup.py build_ext --inplace
           # delete .py files inside your package (replace mypkg with your package dir)
-          find ./ -type f -name '*.py' -print -delete
+          find kataglyphispythonpackage -type f -name '*.py' -print -delete
           python3 setup.py bdist_wheel
           # python3 -m build --no-isolation
           PYTHON_VERSION_SHORT=$(python3 -c 'import sys; print(f"{sys.version_info[0]}{sys.version_info[1]}")')
