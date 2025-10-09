@@ -74,7 +74,7 @@ jobs:
           $ErrorActionPreference = 'Stop'
 
           Write-Host "=== Build: install build dependencies ==="
-          pip install --upgrade setuptools wheel cython build twine
+          pip install --upgrade setuptools wheel cython build twine auditwheel
 
           Write-Host "=== Build: python3 setup.py build_ext --inplace ==="
           python3 setup.py build_ext --inplace
