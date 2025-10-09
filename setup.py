@@ -1,4 +1,3 @@
-# setup.py
 import os
 import sys
 from pathlib import Path
