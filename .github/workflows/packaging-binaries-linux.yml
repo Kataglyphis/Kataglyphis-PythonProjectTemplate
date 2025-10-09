@@ -55,7 +55,7 @@ jobs:
           esac
           export CYTHONIZE="True"
           cp resources/packaging/binary/MANIFEST.in MANIFEST.in
-          # pip install --upgrade setuptools wheel cython build twine
+          pip install --upgrade setuptools wheel cython build twine
           python3 setup.py build_ext --inplace
           # delete .py files inside your package (replace mypkg with your package dir)
           # find kataglyphispythonpackage -type f -name '*.py' -print -delete
