@@ -4,7 +4,18 @@ import sys
 from pathlib import Path
 from setuptools import setup, Extension
 from setuptools.command.build_ext import build_ext
+# --- add near the bottom of your setup.py (before setup(**setup_kwargs)) ---
+import zipfile
+import hashlib
+import base64
+import tempfile
+import shutil
 
+try:
+    from wheel.bdist_wheel import bdist_wheel as _bdist_wheel
+except Exception:
+    _bdist_wheel = None
+    
 # Accept several truthy values for CYTHONIZE (so "True", True, "1", "true" all work)
 CYTHONIZE_RAW = os.getenv("CYTHONIZE", "0")
 CYTHONIZE = str(CYTHONIZE_RAW).strip().lower() in ("1", "true", "yes", "on")
@@ -128,18 +139,6 @@ if CYTHONIZE:
     )
 else:
     setup_kwargs.update({"packages": [package_dir], "include_package_data": True})
-# --- add near the bottom of your setup.py (before setup(**setup_kwargs)) ---
-
-import zipfile
-import hashlib
-import base64
-import tempfile
-import shutil
-
-try:
-    from wheel.bdist_wheel import bdist_wheel as _bdist_wheel
-except Exception:
-    _bdist_wheel = None
 
 class StripWheel(_bdist_wheel if _bdist_wheel is not None else object):
     """
