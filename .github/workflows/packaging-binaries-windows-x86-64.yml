@@ -29,7 +29,7 @@ jobs:
       - name: Install uv (Astral)
         uses: astral-sh/setup-uv@v7.0.0
         with:
-          python-version: 3.13t
+          python-version: 3.14t
           enable-cache: true
 
       # Optional: install Python pinned by project if you want: `uv python install`
@@ -42,27 +42,6 @@ jobs:
             Write-Host "No uv.lock found — performing non-locked sync"
             uv sync --dev --all-extras
           }
-
-      - name: Runner diagnostics & ensure Windows
-        shell: pwsh
-        run: |
-          Write-Host "=== Runner diagnostics ==="
-          Write-Host "OS env: $Env:OS"
-          Write-Host "Runner label (runs-on input): ${{ inputs.runner }}"
-          Write-Host "GITHUB_WORKSPACE: $Env:GITHUB_WORKSPACE"
-          if ($Env:OS -ne 'Windows_NT') {
-            Write-Error "This reusable workflow requires a Windows runner (e.g. 'windows-2022' or 'windows-latest'). Current runner is not Windows. Aborting."
-            exit 1
-          }
-          Write-Host "PATH (truncated):"
-          $Env:PATH.Split(';')[0..20] -join ';' | Write-Host
-          Write-Host "Python version (if present):"
-          python3 --version || Write-Host "python3 not found"
-          Write-Host "cl.exe available?"
-          Get-Command cl.exe -ErrorAction SilentlyContinue | ForEach-Object { $_.Path } || Write-Host "cl.exe not found (will try vcvarsall during build)"
-          Write-Host "clang available?"
-          Get-Command clang -ErrorAction SilentlyContinue | ForEach-Object { $_.Path } || Write-Host "clang not found"
-          Write-Host "=== end diagnostics ==="
 
       - name: Install Windows Dependencies (safe call)
         shell: pwsh
@@ -86,15 +65,6 @@ jobs:
             Write-Host "LLVM path not found ($llvmPath). Continuing; setup-dependencies may have installed elsewhere."
           }
 
-      - name: Prepare environment
-        shell: pwsh
-        run: |
-          Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass -Force
-          python3 --version
-          pip --version
-          pip install --upgrade pip --verbose
-          pip install ".[dev,test,docs]" --verbose
-
       - name: Build Windows binaries (pure PowerShell, import MSVC env if present)
         shell: pwsh
         env:
@@ -103,52 +73,18 @@ jobs:
           Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass -Force
           $ErrorActionPreference = 'Stop'
 
-          Write-Host "=== Build: attempt to import MSVC environment (vcvars) via vswhere if available ==="
-
-          Write-Host "=== Build: copy MANIFEST.in if present ==="
-          $manifestSrc = Join-Path $Env:GITHUB_WORKSPACE "resources\packaging\binary\MANIFEST.in"
-          if (Test-Path $manifestSrc) {
-            Copy-Item -Path $manifestSrc -Destination (Join-Path $Env:GITHUB_WORKSPACE "MANIFEST.in") -Force
-            Write-Host "Copied MANIFEST.in"
-          } else {
-            Write-Host "MANIFEST.in not found at $manifestSrc; continuing"
-          }
-
           Write-Host "=== Build: install build dependencies ==="
-          pip install --upgrade setuptools wheel cython build twine --verbose
+          pip install --upgrade setuptools wheel cython build twine
 
           Write-Host "=== Build: python3 setup.py build_ext --inplace ==="
           python3 setup.py build_ext --inplace
 
-          Write-Host "=== Build: python3 -m build ==="
-          python3 -m build
+          # build wheel into dist/
+          python3 setup.py bdist_wheel -d dist
 
-          Write-Host "=== Build: rename wheels to cpXY-cpXY-win_amd64 ==="
-          $python_version = (python3 -c 'import sys; print(f"{sys.version_info.major}{sys.version_info.minor}")').Trim()
-          if (-not $python_version) {
-            Write-Error "Could not detect python version"
-            exit 1
-          }
-          $python_abi = "cp$python_version"
-          $tag = "$python_abi-$python_abi-win_amd64"
-          $distDir = Join-Path $Env:GITHUB_WORKSPACE "dist"
-          if (-not (Test-Path $distDir)) {
-            Write-Error "dist directory not found: $distDir"
-            exit 1
-          }
-          $wheels = Get-ChildItem -Path $distDir -Filter '*.whl' -ErrorAction SilentlyContinue
-          if (-not $wheels) {
-            Write-Error "No wheel files found under $distDir"
-            exit 1
-          }
-          foreach ($w in $wheels) {
-            $new = $w.Name -replace 'py3-none-any', $tag
-            if ($new -ne $w.Name) {
-              Write-Host "Renaming $($w.Name) -> $new"
-              Rename-Item -Path $w.FullName -NewName $new -Force
-            } else {
-              Write-Host "Skipping rename for $($w.Name) (pattern not matched)"
-            }
+          # repair every wheel found in dist (works in PowerShell)
+          Get-ChildItem -Path dist -Filter '*.whl' | ForEach-Object {
+              & auditwheel repair $_.FullName -w dist
           }
 
           Write-Host "=== Build finished ==="
