@@ -59,8 +59,8 @@ jobs:
           python3 setup.py build_ext --inplace
           # delete .py files inside your package (replace mypkg with your package dir)
           find kataglyphispythonpackage -type f -name '*.py' -print -delete
-          python3 setup.py bdist_wheel
-          # python3 -m build --no-isolation
+          # python3 setup.py bdist_wheel
+          python3 -m build # --no-isolation
           PYTHON_VERSION_SHORT=$(python3 -c 'import sys; print(f"{sys.version_info[0]}{sys.version_info[1]}")')
           PYTHON_ABI="cp${PYTHON_VERSION_SHORT}"
           PLATFORM="manylinux1_${WHEEL_ARCH}"
