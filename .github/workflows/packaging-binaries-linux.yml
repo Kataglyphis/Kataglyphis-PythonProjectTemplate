@@ -57,7 +57,7 @@ jobs:
           cp resources/packaging/binary/MANIFEST.in MANIFEST.in
           pip install --upgrade setuptools wheel cython build twine
           python3 setup.py build_ext --inplace
-          python3 -m build
+          python3 -m build --no-isolation
           PYTHON_VERSION_SHORT=$(python3 -c 'import sys; print(f"{sys.version_info[0]}{sys.version_info[1]}")')
           PYTHON_ABI="cp${PYTHON_VERSION_SHORT}"
           PLATFORM="manylinux1_${WHEEL_ARCH}"
