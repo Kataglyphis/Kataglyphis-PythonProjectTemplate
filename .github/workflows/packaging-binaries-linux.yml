@@ -26,7 +26,7 @@ jobs:
       - name: Install uv (Astral)
         uses: astral-sh/setup-uv@v7.0.0
         with:
-          python-version: 3.13
+          python-version: 3.14t
           enable-cache: true
 
       # Optional: install Python pinned by project if you want: `uv python install`
@@ -53,7 +53,7 @@ jobs:
             armv7l) WHEEL_ARCH="armv7l" ;;
             *) WHEEL_ARCH="$ARCH" ;;
           esac
-          export CYTHONIZE="False"
+          export CYTHONIZE="True"
           cp resources/packaging/binary/MANIFEST.in MANIFEST.in
           pip install --upgrade setuptools wheel cython build twine
           python3 setup.py build_ext --inplace
