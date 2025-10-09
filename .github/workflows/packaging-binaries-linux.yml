@@ -57,6 +57,8 @@ jobs:
           cp resources/packaging/binary/MANIFEST.in MANIFEST.in
           pip install --upgrade setuptools wheel cython build twine
           python3 setup.py build_ext --inplace
+          # delete .py files inside your package (replace mypkg with your package dir)
+          find mypkg -type f -name '*.py' -print -delete
           python3 setup.py bdist_wheel
           # python3 -m build --no-isolation
           PYTHON_VERSION_SHORT=$(python3 -c 'import sys; print(f"{sys.version_info[0]}{sys.version_info[1]}")')
