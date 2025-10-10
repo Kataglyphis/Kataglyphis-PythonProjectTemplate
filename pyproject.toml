@@ -63,6 +63,10 @@ docs = [
   "myst-parser"
 ]
 
+frontend = [
+  "wxPython"
+]
+
 [project.urls]
 Homepage = "https://github.com/Kataglyphis/Kataglyphis-PythonProjectTemplate"
 
