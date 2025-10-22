@@ -14,5 +14,5 @@ winget install --accept-source-agreements --accept-package-agreements --id=LLVM.
 Write-Host "Installing Ninja via winget..."
 winget install --accept-source-agreements --accept-package-agreements --id=Ninja-build.Ninja  -e
 # Install Astral UV
-powershell -ExecutionPolicy ByPass -c "irm https://astral.sh/uv/install.ps1 | iex"
-Write-Host "=== Dependency installation completed ==="
+# powershell -ExecutionPolicy ByPass -c "irm https://astral.sh/uv/install.ps1 | iex"
+# Write-Host "=== Dependency installation completed ==="
