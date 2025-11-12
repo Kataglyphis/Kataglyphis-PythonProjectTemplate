@@ -59,10 +59,10 @@ jobs:
         env:
           CYTHONIZE: True
         run: |
-          cp resources/packaging/binary/MANIFEST.in MANIFEST.in
           Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass -Force
           $ErrorActionPreference = 'Stop'
-
+          
+          $env:CYTHONIZE="True"
           Write-Host "=== Build: install build dependencies ==="
           uv pip install --upgrade setuptools wheel cython build twine
 

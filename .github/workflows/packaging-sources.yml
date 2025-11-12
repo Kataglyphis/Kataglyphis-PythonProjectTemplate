@@ -70,9 +70,6 @@ jobs:
           }
         shell: pwsh
 
-      - name: Copy Manifest
-        run: cp resources/packaging/sources/MANIFEST.in MANIFEST.in
-
       - name: Build source distribution
         run: |
           uv build
