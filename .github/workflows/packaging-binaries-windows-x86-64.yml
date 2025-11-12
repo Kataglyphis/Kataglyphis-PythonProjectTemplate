@@ -59,6 +59,7 @@ jobs:
         env:
           CYTHONIZE: True
         run: |
+          cp resources/packaging/binary/MANIFEST.in MANIFEST.in
           Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass -Force
           $ErrorActionPreference = 'Stop'
 
