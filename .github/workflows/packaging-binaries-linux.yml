@@ -44,6 +44,7 @@ jobs:
         env:
           CYTHONIZE: "True"
         run: |
+          cp resources/packaging/binary/MANIFEST.in MANIFEST.in
           export CYTHONIZE="True"
           uv pip install --upgrade setuptools wheel cython build twine auditwheel
           uv build
