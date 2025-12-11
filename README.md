@@ -1,12 +1,12 @@
-<h1 align="center">
-  <br>
-  <a href="https://jonasheinle.de"><img src="images/logo.png" alt="logo" width="200"></a>
-  <br>
-  KataglyphisPythonPackage
-  <br>
-</h1>
+<div align="center">
+  <a href="https://jonasheinle.de">
+    <img src="images/logo.png" alt="logo" width="200" />
+  </a>
 
-<h4 align="center">A template <a href="https://jonasheinle.de" target="_blank"></a>.</h4>
+  <h1>Kataglyphis-PythonProjectTemplate</h1>
+
+  <h4>A template for python packages</h4>
+</div>
 
 Docs can be found [here](https://pythonprojecttemplate.jonasheinle.de/).
 
@@ -17,50 +17,30 @@ Docs can be found [here](https://pythonprojecttemplate.jonasheinle.de/).
 [![Donate](https://img.shields.io/badge/Donate-PayPal-green.svg)](https://www.paypal.com/paypalme/JonasHeinle)
 [![Twitter](https://img.shields.io/twitter/follow/Cataglyphis_?style=social)](https://twitter.com/Cataglyphis_)
 
-<p align="center">
-  <a href="#about-the-project">About The Project</a> •
-  <a href="#overview">Overview</a> •
-  <a href="#getting-started">Getting Started</a> •
-  <a href="#tests">Tests</a> •
-  <a href="#roadmap">Roadmap</a> •
-  <a href="#contributing">Contributing</a> •
-  <a href="#license">License</a> •
-  <a href="#acknowledgements">Acknowledgements</a> •
-  <a href="#literature">Literature</a>
-</p>
+## Table of Contents
 
-<details open="open">
-  <summary>Table of Contents</summary>
-  <ol>
-    <li>
-      <a href="#about-the-project">About The Project</a>
-      <ul>
-        <li><a href="#key-features">Key Features</a></li>
-        <li><a href="#dependencies">Dependencies</a></li>
-        <li><a href="#useful-tools">Useful Tools</a></li>
-      </ul>
-    </li>
-    <li><a href="#overview">Overview</a></li>
-    <li>
-      <a href="#getting-started">Getting Started</a>
-      <ul>
-        <li><a href="#setup">Setup</a></li>
-        <li><a href="#installation">Installation</a></li>
-        <li><a href="#deployment-recommendations-hardwaresoftware">Deployment Recommendations</a></li>
-      </ul>
-    </li>
-    <li><a href="#tests">Tests</a></li>
-    <li><a href="#roadmap">Roadmap</a></li>
-    <li><a href="#contributing">Contributing</a></li>
-    <li><a href="#license">License</a></li>
-    <li><a href="#contact-and-maintainers">Contact and Maintainers</a></li>
-    <li><a href="#acknowledgements">Acknowledgements</a></li>
-    <li><a href="#literature">Literature</a></li>
-    <li><a href="#demo">Demo</a></li>
-    <li><a href="#references">References</a></li>
-    <li><a href="#known-issues">Known Issues</a></li>
-  </ol>
-</details>
+- [About The Project](#about-the-project)
+  - [Key Features](#key-features)
+  - [Dependencies](#dependencies)
+  - [Useful Tools](#useful-tools)
+- [Overview](#overview)
+- [Getting Started](#getting-started)
+  - [Setup](#setup)
+  - [Pre commit hook](#pre-commit-hook)
+  - [Installation](#installation)
+  - [Deployment Recommendations (Hardware/Software)](#deployment-recommendations-hardwaresoftware)
+    - [Python package deployment in pure C](#python-package-deployment-in-pure-c)
+- [Tests](#tests)
+- [Roadmap](#roadmap)
+- [Contributing](#contributing)
+- [License](#license)
+- [Contact and Maintainers](#contact-and-maintainers)
+- [Acknowledgements](#acknowledgements)
+- [Literature](#literature)
+  - [Deployment](#deployment)
+- [Demo](#demo)
+- [References](#references)
+- [Known Issues](#known-issues)
 
 ---
 
