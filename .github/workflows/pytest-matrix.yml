@@ -61,10 +61,10 @@ jobs:
         run: |
           if [ -f uv.lock ]; then
             echo "uv.lock found — using locked sync"
-            uv sync --locked --dev --all-extras
+            uv -v sync --locked --dev --all-extras
           else
             echo "No uv.lock found — performing non-locked sync"
-            uv sync --dev --all-extras
+            uv -v sync --dev --all-extras
           fi
         shell: bash
 
@@ -73,10 +73,10 @@ jobs:
         run: |
           if (Test-Path -Path 'uv.lock') {
             Write-Host "uv.lock found — using locked sync"
-            uv sync --locked --dev --all-extras
+            uv -v sync --locked --dev --all-extras
           } else {
             Write-Host "No uv.lock found — performing non-locked sync"
-            uv sync --dev --all-extras
+            uv -v sync --dev --all-extras
           }
         shell: pwsh
 
@@ -130,7 +130,7 @@ jobs:
           uv run python bench/demo_cprofile.py
           uv run python bench/demo_line_profiler.py
           uv run -m memory_profiler bench/demo_memory_profiling.py
-          uv run py-spy record --rate 200 --duration 45 -o profile.svg -- python bench/demo_py_spy.py
+          uv run py-spy record --rate 200 --duration 10 -o profile.svg -- python bench/demo_py_spy.py
           uv run pytest bench/demo_pytest_benchmark.py
 
       - name: Upload test results
