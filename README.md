@@ -52,6 +52,7 @@ Use it as a starting point for creating and deploying your own Python projects.
 ### Key Features
 
 - Features are to be adjusted to your own project needs.
+- **System Monitoring**: Built-in CPU, GPU, RAM monitoring with visualization capabilities
 
 
 <div align="center">
@@ -63,6 +64,7 @@ Use it as a starting point for creating and deploying your own Python projects.
 |                               | Lore ipsum                                    |         ✔️         |
 |  **Infrastructure**           |                                               |                     |
 |                               | Add hydra support                             |         ❌         |
+|                               | System Monitoring (CPU/GPU/RAM)               |         ✔️         |
 |  **Lore ipsum agnostic**      |                                               |                     |
 |                               | Advanced unit testing                         |         🔶         |
 |                               | Advanced performance testing                  |         🔶         |
@@ -193,6 +195,27 @@ For development, you can install comprehensive dependencies with:
 pip install -v -e .[dev,docs,test]
 ```
 Then run your testing framework (e.g., `pytest`).
+
+### System Monitoring
+
+This template includes a comprehensive system monitoring module for tracking CPU, GPU, and RAM usage.
+
+**Quick Start:**
+```bash
+# Run the demo
+python examples/demo_system_monitoring.py
+```
+
+**Usage Example:**
+```python
+from kataglyphispythonpackage.system_monitor import SystemMonitor
+
+monitor = SystemMonitor()
+monitor.start_monitoring(interval=1.0, duration=60)
+monitor.save_data()
+```
+
+For detailed documentation, see [docs/SYSTEM_MONITORING.md](docs/SYSTEM_MONITORING.md).
 
 ---
 
