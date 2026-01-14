@@ -130,7 +130,7 @@ jobs:
           uv run python bench/demo_cprofile.py
           uv run python bench/demo_line_profiler.py
           uv run -m memory_profiler bench/demo_memory_profiling.py
-          uv run py-spy record --rate 200 --duration 10 -o profile.svg -- python bench/demo_py_spy.py
+          uv run py-spy record --rate 200 --duration 10 -o docs/test_results/profile.svg -- python bench/demo_py_spy.py || echo "py-spy profiling skipped (requires longer-running process)"
           uv run pytest bench/demo_pytest_benchmark.py
 
       - name: Upload test results
